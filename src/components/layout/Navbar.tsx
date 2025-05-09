@@ -1,7 +1,9 @@
-
 import { useState, useEffect, useRef } from 'react';
-import { Search, Bell, Heart, ShoppingCart, Menu, User, X, ChevronLeft, ChevronRight } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Search, Bell, Heart, ShoppingCart, Menu, User, X, ChevronLeft, ChevronRight, LogOut } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthProvider';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 interface CategoryType {
   id: string;
@@ -39,11 +41,15 @@ const AnnouncementBar = () => {
 const MobileMenu = ({ 
   isOpen, 
   onClose, 
-  categories 
+  categories,
+  user,
+  handleLogout 
 }: { 
   isOpen: boolean; 
   onClose: () => void;
   categories: CategoryType[];
+  user: any;
+  handleLogout: () => void;
 }) => {
   const [activeCategory, setActiveCategory] = useState<CategoryType | null>(null);
 
@@ -68,14 +74,34 @@ const MobileMenu = ({
             
             {/* User Actions */}
             <div className="p-4 border-b">
-              <Link 
-                to="/login" 
-                className="flex items-center gap-2 py-2 px-3 rounded-md hover:bg-gray-100"
-                onClick={onClose}
-              >
-                <User className="w-5 h-5" />
-                <span>Acceder / Registrarse</span>
-              </Link>
+              {user ? (
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-full bg-vicar-blue text-white flex items-center justify-center font-medium">
+                      {user.email?.charAt(0).toUpperCase() || "U"}
+                    </div>
+                    <div>
+                      <p className="font-medium">{user.email}</p>
+                    </div>
+                  </div>
+                  <button 
+                    onClick={handleLogout}
+                    className="flex items-center gap-2 py-2 px-3 rounded-md hover:bg-gray-100 text-red-500"
+                  >
+                    <LogOut className="w-5 h-5" />
+                    <span>Cerrar sesión</span>
+                  </button>
+                </div>
+              ) : (
+                <Link 
+                  to="/auth" 
+                  className="flex items-center gap-2 py-2 px-3 rounded-md hover:bg-gray-100"
+                  onClick={onClose}
+                >
+                  <User className="w-5 h-5" />
+                  <span>Acceder / Registrarse</span>
+                </Link>
+              )}
             </div>
             
             {/* Categories */}
@@ -184,6 +210,26 @@ const Navbar = ({ categories }: NavbarProps) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const navigate = useNavigate();
+  
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut();
+      toast({
+        title: "Sesión cerrada",
+        description: "Has cerrado sesión exitosamente"
+      });
+      navigate('/');
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: "No se pudo cerrar la sesión",
+        variant: "destructive"
+      });
+    }
+  };
   
   useEffect(() => {
     const handleScroll = () => {
@@ -256,9 +302,15 @@ const Navbar = ({ categories }: NavbarProps) => {
                 0
               </span>
             </Link>
-            <Link to="/login" aria-label="Mi perfil">
-              <User className="w-6 h-6 text-gray-700" />
-            </Link>
+            {user ? (
+              <div className="w-6 h-6 rounded-full bg-vicar-blue text-white flex items-center justify-center font-medium">
+                {user.email?.charAt(0).toUpperCase() || "U"}
+              </div>
+            ) : (
+              <Link to="/auth" aria-label="Mi perfil">
+                <User className="w-6 h-6 text-gray-700" />
+              </Link>
+            )}
           </div>
         </div>
         
@@ -324,12 +376,46 @@ const Navbar = ({ categories }: NavbarProps) => {
                 0
               </span>
             </Link>
-            <Link 
-              to="/login"
-              className="bg-vicar-blue text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
-            >
-              ACCEDER
-            </Link>
+            
+            {user ? (
+              <div className="relative group">
+                <div className="cursor-pointer flex items-center gap-2 bg-gray-100 px-3 py-2 rounded-md hover:bg-gray-200">
+                  <div className="w-6 h-6 rounded-full bg-vicar-blue text-white flex items-center justify-center font-medium">
+                    {user.email?.charAt(0).toUpperCase() || "U"}
+                  </div>
+                  <span className="font-medium text-sm">{user.email?.split('@')[0]}</span>
+                </div>
+                
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg overflow-hidden z-20 invisible group-hover:visible">
+                  <div className="py-2">
+                    <div className="px-4 py-2 text-xs text-gray-500">
+                      {user.email}
+                    </div>
+                    <div className="border-t border-gray-100"></div>
+                    <Link to="/mi-perfil" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                      Mi perfil
+                    </Link>
+                    <Link to="/mis-ordenes" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                      Mis órdenes
+                    </Link>
+                    <div className="border-t border-gray-100"></div>
+                    <button 
+                      onClick={handleLogout}
+                      className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                    >
+                      Cerrar sesión
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <Link 
+                to="/auth"
+                className="bg-vicar-blue text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
+              >
+                ACCEDER
+              </Link>
+            )}
           </div>
         </div>
         
@@ -388,6 +474,8 @@ const Navbar = ({ categories }: NavbarProps) => {
         isOpen={mobileMenuOpen} 
         onClose={() => setMobileMenuOpen(false)} 
         categories={categories}
+        user={user}
+        handleLogout={handleLogout}
       />
     </header>
   );
