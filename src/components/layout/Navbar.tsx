@@ -1,10 +1,10 @@
-
 import { useState, useEffect, useRef } from 'react';
 import { Search, Bell, Heart, ShoppingCart, Menu, User, X, ChevronLeft, ChevronRight, LogOut, Smartphone } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthProvider';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { NavbarSearchBar, NavbarActionIcons } from './NavbarActions';
 
 interface CategoryType {
   id: string;
@@ -290,41 +290,14 @@ const Navbar = ({ categories }: NavbarProps) => {
           </button>
           
           {/* Icons */}
-          <div className="flex items-center gap-3">
-            <Link to="/notificaciones" aria-label="Notificaciones">
-              <Bell className="w-6 h-6 text-gray-700" />
-            </Link>
-            <Link to="/favoritos" aria-label="Favoritos">
-              <Heart className="w-6 h-6 text-gray-700" />
-            </Link>
-            <Link to="/carrito" aria-label="Carrito de compras" className="relative">
-              <ShoppingCart className="w-6 h-6 text-gray-700" />
-              <span className="absolute -top-1 -right-1 bg-vicar-blue text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">
-                0
-              </span>
-            </Link>
-            {user ? (
-              <div className="w-6 h-6 rounded-full bg-vicar-blue text-white flex items-center justify-center font-medium">
-                {user.email?.charAt(0).toUpperCase() || "U"}
-              </div>
-            ) : (
-              <Link to="/auth" aria-label="Mi perfil">
-                <User className="w-6 h-6 text-gray-700" />
-              </Link>
-            )}
-          </div>
+          <NavbarActionIcons />
         </div>
         
         {/* Second Row */}
         <div className="flex items-center justify-between px-4 py-2 bg-white shadow">
           {/* Search Bar */}
           <div className="relative flex-grow">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-            <input 
-              type="text" 
-              placeholder="Buscar"
-              className="w-full py-2 pl-10 pr-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-vicar-blue focus:border-vicar-blue"
-            />
+            <NavbarSearchBar />
           </div>
           
           {/* WhatsApp Button */}
@@ -364,28 +337,12 @@ const Navbar = ({ categories }: NavbarProps) => {
           
           {/* Search Bar */}
           <div className="relative w-1/3">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-            <input 
-              type="text" 
-              placeholder="Buscar"
-              className="w-full py-2 pl-10 pr-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-vicar-blue focus:border-vicar-blue"
-            />
+            <NavbarSearchBar />
           </div>
           
-          {/* User Actions */}
+          {/* User Actions - Updated to use NavbarActionIcons */}
           <div className="flex items-center gap-5">
-            <Link to="/notificaciones" aria-label="Ver notificaciones" className="text-gray-700 hover:text-vicar-blue transition-colors">
-              <Bell className="w-6 h-6" />
-            </Link>
-            <Link to="/favoritos" aria-label="Ver favoritos" className="text-gray-700 hover:text-vicar-blue transition-colors">
-              <Heart className="w-6 h-6" />
-            </Link>
-            <Link to="/carrito" aria-label="Ver carrito de compras" className="text-gray-700 hover:text-vicar-blue transition-colors relative">
-              <ShoppingCart className="w-6 h-6" />
-              <span className="absolute -top-1 -right-1 bg-vicar-blue text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
-                0
-              </span>
-            </Link>
+            <NavbarActionIcons />
             
             {user ? (
               <div className="relative group">

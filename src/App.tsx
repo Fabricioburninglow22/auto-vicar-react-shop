@@ -3,13 +3,18 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthProvider";
+import { AuthGuard } from "./guards/AuthGuard";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Catalog from "./pages/Catalog";
 import Services from "./pages/Services";
 import NotFound from "./pages/NotFound";
+import Favorites from "./pages/Favorites";
+import Cart from "./pages/Cart";
+import Notifications from "./pages/Notifications";
+import ProductDetails from "./pages/ProductDetails";
 
 const queryClient = new QueryClient();
 
@@ -23,11 +28,17 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
-            <Route path="/productos" element={<Catalog />} />
+            
+            {/* Protected Routes */}
+            <Route path="/productos" element={<AuthGuard><Catalog /></AuthGuard>} />
             <Route path="/servicios" element={<Services />} />
-            <Route path="/categoria/:categoryId" element={<Catalog />} />
-            <Route path="/producto/:productId" element={<Catalog />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="/categoria/:categoryId" element={<AuthGuard><Catalog /></AuthGuard>} />
+            <Route path="/producto/:productId" element={<AuthGuard><ProductDetails /></AuthGuard>} />
+            <Route path="/favoritos" element={<AuthGuard><Favorites /></AuthGuard>} />
+            <Route path="/carrito" element={<AuthGuard><Cart /></AuthGuard>} />
+            <Route path="/notificaciones" element={<AuthGuard><Notifications /></AuthGuard>} />
+            
+            {/* Catch-all route */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

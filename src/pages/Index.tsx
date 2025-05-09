@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
@@ -14,8 +13,12 @@ import WhatsappConsultation from '../components/home/WhatsappConsultation';
 import CategoriesShowcase from '../components/home/CategoriesShowcase';
 import WhyChooseUs from '../components/home/WhyChooseUs';
 import EventPopup from '../components/shared/EventPopup';
+import { useAuth } from '@/contexts/AuthProvider';
 
 const Index = () => {
+  // Get authentication state
+  const { user } = useAuth();
+  
   // Sample categories data with subcategories
   const categories = [
     {
@@ -106,7 +109,8 @@ const Index = () => {
         <Services />
         <Testimonials />
         <WhatsappConsultation />
-        <CategoriesShowcase />
+        {/* Only show CategoriesShowcase to authenticated users */}
+        {user && <CategoriesShowcase />}
         <WhyChooseUs />
       </main>
       

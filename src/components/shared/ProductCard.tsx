@@ -1,8 +1,8 @@
-
 import { useState } from 'react';
 import { Heart } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
+import { useProductInteraction } from '@/hooks/useProductInteraction';
 
 interface ProductCardProps {
   id: string;
@@ -29,36 +29,27 @@ const ProductCard = ({
 }: ProductCardProps) => {
   const [isFavorite, setIsFavorite] = useState(false);
   const { toast } = useToast();
-  const navigate = useNavigate();
+  const { addToFavorites, addToCart, navigateToProduct } = useProductInteraction();
   
   const handleFavoriteToggle = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     
+    addToFavorites(id, name);
     setIsFavorite(!isFavorite);
-    
-    toast({
-      title: !isFavorite ? 'Añadido a favoritos' : 'Eliminado de favoritos',
-      description: name,
-      duration: 3000,
-    });
   };
   
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     
-    toast({
-      title: 'Añadido al carrito',
-      description: name,
-      duration: 3000,
-    });
+    addToCart(id, name);
   };
 
   const handleViewDetails = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    navigate(`/producto/${id}`);
+    navigateToProduct(id);
   };
 
   return (
