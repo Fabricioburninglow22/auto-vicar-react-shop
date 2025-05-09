@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -13,7 +12,7 @@ import {
   Lock, 
   User, 
   UserPlus,
-  Google 
+  Github 
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -350,7 +349,7 @@ const Auth = () => {
                       className="w-full"
                       onClick={handleGoogleLogin}
                     >
-                      <Google className="mr-2 h-5 w-5" />
+                      <Github className="mr-2 h-5 w-5" />
                       Google
                     </Button>
                   </form>
@@ -415,7 +414,6 @@ const Auth = () => {
                         </button>
                       </div>
                       
-                      {/* Password strength indicator */}
                       {password && (
                         <div className="mt-2">
                           <div className="flex justify-between items-center mb-1">
@@ -497,7 +495,7 @@ const Auth = () => {
                       className="w-full"
                       onClick={handleGoogleLogin}
                     >
-                      <Google className="mr-2 h-5 w-5" />
+                      <Github className="mr-2 h-5 w-5" />
                       Google
                     </Button>
                   </form>
@@ -571,7 +569,6 @@ const Auth = () => {
           )}
         </div>
 
-        {/* Email verification message */}
         {tab === "login" && !resetPasswordMode && (
           <Alert className="mt-4">
             <AlertDescription className="text-sm text-gray-600">
