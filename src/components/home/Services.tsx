@@ -1,5 +1,5 @@
 
-import { Wrench, Tools, Shield, Car, Clock, CreditCard } from 'lucide-react';
+import { Wrench, ToolIcon, Shield, Car, Clock, CreditCard } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const Services = () => {
@@ -18,7 +18,7 @@ const Services = () => {
     },
     {
       id: 3,
-      icon: <Tools className="w-10 h-10 text-vicar-blue" />,
+      icon: <ToolIcon className="w-10 h-10 text-vicar-blue" />,
       title: "Mantenimiento y Diagnóstico",
       description: "Servicio completo de diagnóstico y mantenimiento para sistemas eléctricos automotrices."
     },
