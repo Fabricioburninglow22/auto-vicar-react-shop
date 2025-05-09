@@ -1,0 +1,396 @@
+
+import { useState, useEffect, useRef } from 'react';
+import { Search, Bell, Heart, ShoppingCart, Menu, User, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
+
+interface CategoryType {
+  id: string;
+  name: string;
+  icon: string;
+  subcategories: { id: string; name: string }[];
+}
+
+interface NavbarProps {
+  categories: CategoryType[];
+}
+
+const AnnouncementBar = () => {
+  const announcements = [
+    '¡15% OFF en alarmas Viper este mes!',
+    'Envío gratis en compras mayores a S/200',
+    'Nueva colección de autoradios Pioneer',
+    'Garantía de 1 año en todos nuestros productos',
+  ];
+
+  return (
+    <div className="bg-vicar-blue text-white py-2 overflow-hidden">
+      <div className="flex whitespace-nowrap animate-marquee-slow">
+        {announcements.map((text, index) => (
+          <span key={index} className="mx-8 font-medium">{text}</span>
+        ))}
+        {announcements.map((text, index) => (
+          <span key={`repeat-${index}`} className="mx-8 font-medium">{text}</span>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const MobileMenu = ({ 
+  isOpen, 
+  onClose, 
+  categories 
+}: { 
+  isOpen: boolean; 
+  onClose: () => void;
+  categories: CategoryType[];
+}) => {
+  const [activeCategory, setActiveCategory] = useState<CategoryType | null>(null);
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 animate-fade-in" onClick={onClose}>
+      <div 
+        className="fixed top-0 left-0 h-full w-[80%] max-w-xs bg-white shadow-lg animate-slide-right z-50"
+        onClick={e => e.stopPropagation()}
+      >
+        {/* Main Menu */}
+        {!activeCategory ? (
+          <>
+            {/* Header */}
+            <div className="flex justify-between items-center p-4 border-b">
+              <h2 className="font-bold text-lg">Menú</h2>
+              <button onClick={onClose} aria-label="Cerrar menú">
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            
+            {/* User Actions */}
+            <div className="p-4 border-b">
+              <Link 
+                to="/login" 
+                className="flex items-center gap-2 py-2 px-3 rounded-md hover:bg-gray-100"
+                onClick={onClose}
+              >
+                <User className="w-5 h-5" />
+                <span>Acceder / Registrarse</span>
+              </Link>
+            </div>
+            
+            {/* Categories */}
+            <div className="p-4 border-b">
+              <h3 className="font-medium text-sm text-gray-500 mb-2">Categorías</h3>
+              <ul>
+                {categories.map(category => (
+                  <li key={category.id}>
+                    <button 
+                      className="flex justify-between items-center w-full py-2 hover:bg-gray-100 px-2 rounded-md"
+                      onClick={() => setActiveCategory(category)}
+                    >
+                      <span className="flex items-center gap-2">
+                        <span>{category.icon}</span>
+                        <span>{category.name}</span>
+                      </span>
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            
+            {/* Quick Links */}
+            <div className="p-4">
+              <Link 
+                to="/productos" 
+                className="block py-2 hover:text-vicar-blue" 
+                onClick={onClose}
+              >
+                Catálogo Completo
+              </Link>
+              <Link 
+                to="/favoritos" 
+                className="block py-2 hover:text-vicar-blue" 
+                onClick={onClose}
+              >
+                Favoritos
+              </Link>
+              <Link 
+                to="/carrito" 
+                className="block py-2 hover:text-vicar-blue" 
+                onClick={onClose}
+              >
+                Carrito/Cotización
+              </Link>
+              <a 
+                href="https://wa.me/51999999999?text=Hola,%20tengo%20una%20consulta%20sobre" 
+                className="flex items-center gap-2 mt-4 text-vicar-whatsapp-green font-medium"
+                onClick={onClose}
+              >
+                <span>Consultar vía WhatsApp</span>
+              </a>
+            </div>
+          </>
+        ) : (
+          // Subcategories menu
+          <>
+            {/* Header */}
+            <div className="flex justify-between items-center p-4 border-b">
+              <button 
+                onClick={() => setActiveCategory(null)} 
+                className="flex items-center gap-1 text-vicar-blue"
+              >
+                <ChevronLeft className="w-5 h-5" />
+                <span>Volver</span>
+              </button>
+              <button onClick={onClose} aria-label="Cerrar menú">
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            
+            {/* Category Title */}
+            <div className="p-4 border-b">
+              <h2 className="font-bold text-lg flex items-center gap-2">
+                <span>{activeCategory.icon}</span>
+                <span>{activeCategory.name}</span>
+              </h2>
+            </div>
+            
+            {/* Subcategories */}
+            <div className="p-4">
+              <ul>
+                {activeCategory.subcategories.map(subcategory => (
+                  <li key={subcategory.id}>
+                    <Link 
+                      to={`/categoria/${activeCategory.id.toLowerCase()}?sub=${subcategory.id}`}
+                      className="block py-3 px-2 hover:bg-gray-100 rounded-md" 
+                      onClick={onClose}
+                    >
+                      {subcategory.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+};
+
+const Navbar = ({ categories }: NavbarProps) => {
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 10);
+    };
+    
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+  
+  useEffect(() => {
+    // Prevent scrolling when mobile menu is open
+    if (mobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [mobileMenuOpen]);
+  
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node) && activeDropdown) {
+        setActiveDropdown(null);
+      }
+    };
+    
+    document.addEventListener('click', handleClickOutside);
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, [activeDropdown]);
+
+  return (
+    <header className={`sticky top-0 w-full z-40 ${mobileMenuOpen ? 'z-50' : ''}`}>
+      <AnnouncementBar />
+      
+      {/* Mobile Header */}
+      <div className="lg:hidden">
+        {/* First Row */}
+        <div className="flex items-center justify-between px-4 py-3 bg-white shadow-sm">
+          {/* Logo */}
+          <Link to="/" className="font-bold text-xl">VICAR-PERU</Link>
+          
+          {/* Menu Trigger */}
+          <button 
+            onClick={() => setMobileMenuOpen(true)}
+            aria-label="Open menu"
+            className="p-1 hover:bg-gray-100 rounded-md"
+          >
+            <Menu className="w-6 h-6" />
+          </button>
+          
+          {/* Icons */}
+          <div className="flex items-center gap-3">
+            <Link to="/notificaciones" aria-label="Notificaciones">
+              <Bell className="w-6 h-6 text-gray-700" />
+            </Link>
+            <Link to="/favoritos" aria-label="Favoritos">
+              <Heart className="w-6 h-6 text-gray-700" />
+            </Link>
+            <Link to="/carrito" aria-label="Carrito de compras" className="relative">
+              <ShoppingCart className="w-6 h-6 text-gray-700" />
+              <span className="absolute -top-1 -right-1 bg-vicar-blue text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">
+                0
+              </span>
+            </Link>
+            <Link to="/login" aria-label="Mi perfil">
+              <User className="w-6 h-6 text-gray-700" />
+            </Link>
+          </div>
+        </div>
+        
+        {/* Second Row */}
+        <div className="flex items-center justify-between px-4 py-2 bg-white shadow">
+          {/* Search Bar */}
+          <div className="relative flex-grow">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <input 
+              type="text" 
+              placeholder="Buscar"
+              className="w-full py-2 pl-10 pr-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-vicar-blue focus:border-vicar-blue"
+            />
+          </div>
+          
+          {/* WhatsApp Button */}
+          <a 
+            href="https://wa.me/51999999999?text=Hola,%20te%20quedaste%20sin%20batería?"
+            className="ml-3 flex items-center justify-center bg-vicar-whatsapp-light text-vicar-whatsapp-green px-3 py-2 rounded-md font-medium text-sm whitespace-nowrap"
+          >
+            ¿Te quedaste sin batería?
+          </a>
+        </div>
+      </div>
+      
+      {/* Desktop Header */}
+      <div className={`hidden lg:block ${isScrolled ? 'shadow-md' : ''}`}>
+        {/* First Row */}
+        <div className="container mx-auto flex items-center justify-between py-4 px-4 bg-white">
+          {/* Logo and Menu */}
+          <div className="flex items-center gap-6">
+            <Link to="/" className="font-bold text-2xl">VICAR-PERU</Link>
+            <button 
+              onClick={() => setMobileMenuOpen(true)}
+              aria-label="Toggle menu"
+              className="p-1 hover:bg-gray-100 rounded-md"
+            >
+              <Menu className="w-6 h-6" />
+            </button>
+          </div>
+          
+          {/* Search Bar */}
+          <div className="relative w-1/3">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <input 
+              type="text" 
+              placeholder="Buscar"
+              className="w-full py-2 pl-10 pr-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-vicar-blue focus:border-vicar-blue"
+            />
+          </div>
+          
+          {/* User Actions */}
+          <div className="flex items-center gap-5">
+            <Link to="/notificaciones" aria-label="Ver notificaciones" className="text-gray-700 hover:text-vicar-blue transition-colors">
+              <Bell className="w-6 h-6" />
+            </Link>
+            <Link to="/favoritos" aria-label="Ver favoritos" className="text-gray-700 hover:text-vicar-blue transition-colors">
+              <Heart className="w-6 h-6" />
+            </Link>
+            <Link to="/carrito" aria-label="Ver carrito de compras" className="text-gray-700 hover:text-vicar-blue transition-colors relative">
+              <ShoppingCart className="w-6 h-6" />
+              <span className="absolute -top-1 -right-1 bg-vicar-blue text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
+                0
+              </span>
+            </Link>
+            <Link 
+              to="/login"
+              className="bg-vicar-blue text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
+            >
+              ACCEDER
+            </Link>
+          </div>
+        </div>
+        
+        {/* Second Row - Categories */}
+        <div className="bg-white shadow" ref={dropdownRef}>
+          <div className="container mx-auto px-4 flex justify-between items-center">
+            <div className="flex">
+              {categories.map((category) => (
+                <div 
+                  key={category.id}
+                  className="relative group"
+                  onMouseEnter={() => setActiveDropdown(category.id)}
+                  onMouseLeave={() => setActiveDropdown(null)}
+                >
+                  <Link
+                    to={`/categoria/${category.id.toLowerCase()}`}
+                    className={`flex items-center gap-2 px-4 py-3 hover:text-vicar-blue transition-colors ${activeDropdown === category.id ? 'text-vicar-blue' : ''}`}
+                  >
+                    <span>{category.icon}</span>
+                    <span>{category.name}</span>
+                  </Link>
+                  
+                  {/* Dropdown */}
+                  {activeDropdown === category.id && (
+                    <div className="absolute top-full left-0 bg-white shadow-lg rounded-b-lg p-4 min-w-[200px] z-[9000] animate-fade-in">
+                      <div className="grid gap-2">
+                        {category.subcategories.map((subcategory) => (
+                          <Link
+                            key={subcategory.id}
+                            to={`/categoria/${category.id.toLowerCase()}?sub=${subcategory.id}`}
+                            className="hover:bg-gray-100 px-3 py-2 rounded-md transition-colors"
+                            onClick={() => setActiveDropdown(null)}
+                          >
+                            {subcategory.name}
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+            
+            <a 
+              href="https://wa.me/51999999999?text=Hola,%20te%20quedaste%20sin%20batería?"
+              className="flex items-center gap-2 bg-vicar-whatsapp-light text-vicar-whatsapp-green px-4 py-3 font-medium hover:bg-green-50 transition-colors"
+            >
+              ¿Te quedaste sin batería?
+            </a>
+          </div>
+        </div>
+      </div>
+      
+      {/* Mobile Menu */}
+      <MobileMenu 
+        isOpen={mobileMenuOpen} 
+        onClose={() => setMobileMenuOpen(false)} 
+        categories={categories}
+      />
+    </header>
+  );
+};
+
+export default Navbar;
