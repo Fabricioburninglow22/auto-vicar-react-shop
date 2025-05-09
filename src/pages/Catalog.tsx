@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Link, useParams, useLocation } from 'react-router-dom';
 import { 
@@ -29,6 +28,7 @@ const CatalogPage = () => {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const subcategoryParam = searchParams.get('sub');
+  const showOffersParam = searchParams.get('offers');
   const { toast } = useToast();
   const { user } = useAuth();
 
@@ -42,17 +42,21 @@ const CatalogPage = () => {
   );
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const [showFavorites, setShowFavorites] = useState(false);
-  const [showOffers, setShowOffers] = useState(false);
+  const [showOffers, setShowOffers] = useState(showOffersParam === 'true');
   const [sortOption, setSortOption] = useState("recommended");
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [filteredProducts, setFilteredProducts] = useState(products);
 
-  // Handle subcategory query param
+  // Handle subcategory and offers query params
   useEffect(() => {
     if (subcategoryParam) {
       setSelectedSubcategories([subcategoryParam]);
     }
-  }, [subcategoryParam]);
+    
+    if (showOffersParam === 'true') {
+      setShowOffers(true);
+    }
+  }, [subcategoryParam, showOffersParam]);
 
   // Handle category from URL
   useEffect(() => {
@@ -62,7 +66,7 @@ const CatalogPage = () => {
       setSelectedCategories([]);
     }
   }, [categoryId]);
-
+  
   // Apply filters and sorting
   useEffect(() => {
     let result = [...products];
@@ -405,12 +409,20 @@ const CatalogPage = () => {
               <span className="capitalize">{subcategoryParam}</span>
             </>
           )}
+          {showOffersParam === 'true' && (
+            <>
+              <span className="mx-2">/</span>
+              <span>Ofertas</span>
+            </>
+          )}
         </div>
         
         {/* Page Title */}
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl md:text-3xl font-bold">
-            {categoryId ? (
+            {showOffersParam === 'true' ? (
+              'Ofertas Especiales'
+            ) : categoryId ? (
               <span className="capitalize">{categoryId}</span>
             ) : (
               'Catálogo de Productos'

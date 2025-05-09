@@ -1,10 +1,11 @@
 
 import { useRef } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import ProductCard from '../shared/ProductCard';
 
 const BestSellers = () => {
+  const navigate = useNavigate();
   const products = [
     {
       id: "1",
@@ -69,6 +70,10 @@ const BestSellers = () => {
     }
   };
 
+  const handleProductClick = (productId: string) => {
+    navigate(`/producto/${productId}`);
+  };
+
   return (
     <section className="py-12 bg-gray-50">
       <div className="container mx-auto px-4">
@@ -98,8 +103,18 @@ const BestSellers = () => {
             className="grid grid-flow-col auto-cols-[280px] md:auto-cols-[300px] gap-5 overflow-x-auto pb-6 hide-scrollbar scroll-smooth"
           >
             {products.map((product) => (
-              <div key={product.id} className="h-full">
-                <ProductCard {...product} />
+              <div 
+                key={product.id} 
+                className="h-full cursor-pointer" 
+                onClick={() => handleProductClick(product.id)}
+              >
+                <ProductCard 
+                  {...product}
+                  onClick={(e: any) => {
+                    e.stopPropagation();
+                    handleProductClick(product.id);
+                  }}
+                />
               </div>
             ))}
           </div>

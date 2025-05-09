@@ -42,7 +42,7 @@ const PromoBanner = () => {
         </div>
         
         <Link 
-          to="/ofertas"
+          to="/productos?offers=true"
           className="inline-block bg-white text-vicar-blue font-bold py-3 px-8 rounded-md hover:bg-gray-100 transition-colors"
         >
           Ver Ofertas

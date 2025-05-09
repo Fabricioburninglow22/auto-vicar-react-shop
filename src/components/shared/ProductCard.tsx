@@ -1,7 +1,8 @@
 
 import { useState } from 'react';
 import { Heart } from 'lucide-react';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
+import { useNavigate } from 'react-router-dom';
 
 interface ProductCardProps {
   id: string;
@@ -12,6 +13,7 @@ interface ProductCardProps {
   image: string;
   badge?: string;
   isNew?: boolean;
+  onClick?: (e: React.MouseEvent) => void;
 }
 
 const ProductCard = ({
@@ -22,10 +24,12 @@ const ProductCard = ({
   oldPrice,
   image,
   badge,
-  isNew = false
+  isNew = false,
+  onClick
 }: ProductCardProps) => {
   const [isFavorite, setIsFavorite] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
   
   const handleFavoriteToggle = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -51,8 +55,17 @@ const ProductCard = ({
     });
   };
 
+  const handleViewDetails = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    navigate(`/producto/${id}`);
+  };
+
   return (
-    <div className="group relative flex flex-col h-full bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden border border-gray-100">
+    <div 
+      className="group relative flex flex-col h-full bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden border border-gray-100"
+      onClick={onClick}
+    >
       <div className="relative overflow-hidden">
         {/* Badge */}
         {badge && (
@@ -79,9 +92,12 @@ const ProductCard = ({
           {/* Overlay with details button */}
           <div className="absolute inset-0 bg-black bg-opacity-30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center">
             <div className="w-full py-3 bg-black bg-opacity-50">
-              <span className="text-white font-medium text-sm block text-center hover:underline cursor-pointer">
+              <button 
+                onClick={handleViewDetails}
+                className="text-white font-medium text-sm block text-center hover:underline cursor-pointer w-full"
+              >
                 Ver detalles
-              </span>
+              </button>
             </div>
           </div>
         </div>

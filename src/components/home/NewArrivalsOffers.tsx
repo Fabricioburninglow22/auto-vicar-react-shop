@@ -1,9 +1,12 @@
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, ChevronUp, ChevronDown } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import ProductCard from '../shared/ProductCard';
 
 const NewArrivals = () => {
+  const navigate = useNavigate();
+  
   const newProducts = [
     {
       id: "n1",
@@ -96,7 +99,6 @@ const NewArrivals = () => {
     }
   ];
   
-  const arrivalsRef = useRef<HTMLDivElement>(null);
   const [currentArrivalsIndex, setCurrentArrivalsIndex] = useState(0);
   const [currentOfferIndex, setCurrentOfferIndex] = useState(0);
   const [visibleOffers, setVisibleOffers] = useState(3);
@@ -131,25 +133,26 @@ const NewArrivals = () => {
         (prev + 1) % newProducts.length
       );
     }
-    
-    if (arrivalsRef.current) {
-      arrivalsRef.current.scrollTo({
-        left: 0,
-        behavior: 'smooth'
-      });
-    }
   };
   
   const handleOffersScroll = (direction: "up" | "down") => {
     if (direction === "up") {
       setCurrentOfferIndex((prev) => 
-        prev === 0 ? offers.length - visibleOffers : prev - 1
+        prev === 0 ? Math.max(0, offers.length - visibleOffers) : Math.max(0, prev - 1)
       );
     } else {
       setCurrentOfferIndex((prev) => 
-        (prev + 1) % (offers.length - visibleOffers + 1)
+        prev >= (offers.length - visibleOffers) ? 0 : prev + 1
       );
     }
+  };
+  
+  const handleProductClick = (productId: string) => {
+    navigate(`/producto/${productId}`);
+  };
+  
+  const handleOfferClick = (offerId: string) => {
+    navigate(`/producto/${offerId}`);
   };
   
   // Auto rotate offers
@@ -185,47 +188,46 @@ const NewArrivals = () => {
               </div>
             </div>
             
-            <div className="relative h-[400px] overflow-hidden rounded-lg bg-gray-50" ref={arrivalsRef}>
-              <div 
-                className="flex transition-transform duration-500"
-                style={{ transform: `translateX(-${currentArrivalsIndex * 100}%)` }}
-              >
-                {newProducts.map((product, index) => (
-                  <div 
-                    key={product.id}
-                    className="w-full flex-shrink-0 p-4"
-                    style={{ display: index === currentArrivalsIndex ? 'block' : 'none' }}
-                  >
-                    <div className="h-full flex">
-                      {/* Product Image */}
-                      <div className="w-1/2 pr-4">
-                        <div className="relative h-full">
-                          <img 
-                            src={product.image} 
-                            alt={product.name}
-                            className="w-full h-full object-cover rounded-lg"
-                          />
-                          <div className="absolute top-2 right-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded">
-                            NUEVO
-                          </div>
-                        </div>
-                      </div>
-                      
-                      {/* Product Info */}
-                      <div className="w-1/2 flex flex-col justify-center">
-                        <h3 className="text-xl font-bold mb-3">{product.name}</h3>
-                        <p className="text-gray-600 mb-4">{product.description}</p>
-                        <div className="mt-auto">
-                          <span className="text-vicar-blue text-2xl font-bold block mb-4">S/ {product.price.toFixed(2)}</span>
-                          <button className="bg-vicar-blue text-white px-6 py-3 rounded-md hover:bg-blue-700 transition-colors w-full">
-                            Ver detalles
-                          </button>
+            <div className="relative h-[400px] overflow-hidden rounded-lg bg-gray-50">
+              {newProducts.map((product, index) => (
+                <div 
+                  key={product.id}
+                  className={`absolute inset-0 transition-opacity duration-500 ${
+                    index === currentArrivalsIndex ? 'opacity-100 z-10' : 'opacity-0 z-0'
+                  } p-4`}
+                >
+                  <div className="h-full flex">
+                    {/* Product Image */}
+                    <div className="w-1/2 pr-4">
+                      <div className="relative h-full">
+                        <img 
+                          src={product.image} 
+                          alt={product.name}
+                          className="w-full h-full object-cover rounded-lg"
+                        />
+                        <div className="absolute top-2 right-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded">
+                          NUEVO
                         </div>
                       </div>
                     </div>
+                    
+                    {/* Product Info */}
+                    <div className="w-1/2 flex flex-col justify-center">
+                      <h3 className="text-xl font-bold mb-3">{product.name}</h3>
+                      <p className="text-gray-600 mb-4">{product.description}</p>
+                      <div className="mt-auto">
+                        <span className="text-vicar-blue text-2xl font-bold block mb-4">S/ {product.price.toFixed(2)}</span>
+                        <button 
+                          onClick={() => handleProductClick(product.id)}
+                          className="bg-vicar-blue text-white px-6 py-3 rounded-md hover:bg-blue-700 transition-colors w-full"
+                        >
+                          Ver detalles
+                        </button>
+                      </div>
+                    </div>
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
             </div>
           </div>
           
@@ -249,7 +251,7 @@ const NewArrivals = () => {
               </div>
             </div>
             
-            <div className="h-[400px] overflow-hidden bg-gray-50 rounded-lg">
+            <div className="h-[400px] overflow-hidden bg-gray-50 rounded-lg relative">
               <div 
                 className="flex flex-col transition-transform duration-500"
                 style={{
@@ -258,7 +260,11 @@ const NewArrivals = () => {
                 }}
               >
                 {offers.map((offer) => (
-                  <div key={offer.id} className={`p-3 h-[${100 / visibleOffers}%]`}>
+                  <div 
+                    key={offer.id} 
+                    className="p-3" 
+                    style={{ height: `${100 / visibleOffers}%` }}
+                  >
                     <div className="bg-white rounded-lg shadow-md overflow-hidden h-full">
                       <div className="relative">
                         <img 
@@ -281,7 +287,10 @@ const NewArrivals = () => {
                       <div className="p-3">
                         <h3 className="font-bold text-gray-800 mb-1 line-clamp-1">{offer.name}</h3>
                         <p className="text-gray-600 text-sm line-clamp-2 mb-3">{offer.description}</p>
-                        <button className="w-full bg-vicar-blue text-white py-2 rounded text-sm hover:bg-blue-700 transition-colors">
+                        <button 
+                          className="w-full bg-vicar-blue text-white py-2 rounded text-sm hover:bg-blue-700 transition-colors"
+                          onClick={() => handleOfferClick(offer.id)}
+                        >
                           Ver oferta
                         </button>
                       </div>

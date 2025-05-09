@@ -1,5 +1,6 @@
+
 import { useState, useEffect, useRef } from 'react';
-import { Search, Bell, Heart, ShoppingCart, Menu, User, X, ChevronLeft, ChevronRight, LogOut } from 'lucide-react';
+import { Search, Bell, Heart, ShoppingCart, Menu, User, X, ChevronLeft, ChevronRight, LogOut, Smartphone } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthProvider';
 import { supabase } from '@/integrations/supabase/client';
@@ -327,12 +328,21 @@ const Navbar = ({ categories }: NavbarProps) => {
           </div>
           
           {/* WhatsApp Button */}
-          <a 
-            href="https://wa.me/51999999999?text=Hola,%20te%20quedaste%20sin%20batería?"
-            className="ml-3 flex items-center justify-center bg-vicar-whatsapp-light text-vicar-whatsapp-green px-3 py-2 rounded-md font-medium text-sm whitespace-nowrap"
-          >
-            ¿Te quedaste sin batería?
-          </a>
+          <div className="flex items-center gap-2">
+            <a 
+              href="https://wa.me/51999999999?text=Hola,%20te%20quedaste%20sin%20batería?"
+              className="ml-3 flex items-center justify-center bg-vicar-whatsapp-light text-vicar-whatsapp-green px-3 py-2 rounded-md font-medium text-sm whitespace-nowrap"
+            >
+              ¿Te quedaste sin batería?
+            </a>
+            <a 
+              href="https://wa.me/51999999999"
+              aria-label="Contactar por WhatsApp"
+              className="flex items-center justify-center bg-vicar-whatsapp-green p-2 rounded-full"
+            >
+              <Smartphone className="w-5 h-5 text-white" />
+            </a>
+          </div>
         </div>
       </div>
       
@@ -459,12 +469,21 @@ const Navbar = ({ categories }: NavbarProps) => {
               ))}
             </div>
             
-            <a 
-              href="https://wa.me/51999999999?text=Hola,%20te%20quedaste%20sin%20batería?"
-              className="flex items-center gap-2 bg-vicar-whatsapp-light text-vicar-whatsapp-green px-4 py-3 font-medium hover:bg-green-50 transition-colors"
-            >
-              ¿Te quedaste sin batería?
-            </a>
+            <div className="flex items-center gap-2">
+              <a 
+                href="https://wa.me/51999999999?text=Hola,%20te%20quedaste%20sin%20batería?"
+                className="flex items-center gap-2 bg-vicar-whatsapp-light text-vicar-whatsapp-green px-4 py-3 font-medium hover:bg-green-50 transition-colors"
+              >
+                ¿Te quedaste sin batería?
+              </a>
+              <a 
+                href="https://wa.me/51999999999"
+                aria-label="Contactar por WhatsApp"
+                className="flex items-center justify-center bg-vicar-whatsapp-green p-2 rounded-full hover:bg-green-600 transition-colors"
+              >
+                <Smartphone className="w-5 h-5 text-white" />
+              </a>
+            </div>
           </div>
         </div>
       </div>
