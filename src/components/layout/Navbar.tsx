@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/AuthProvider';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { NavbarSearchBar, NavbarActionIcons } from './NavbarActions';
+import { ShoppingProvider } from '@/contexts/ShoppingContext';
 
 interface CategoryType {
   id: string;
@@ -269,6 +270,13 @@ const Navbar = ({ categories }: NavbarProps) => {
     };
   }, [activeDropdown]);
 
+  // Wrap the NavbarActionIcons with ShoppingProvider to prevent context errors
+  const WrappedNavbarActionIcons = () => (
+    <ShoppingProvider>
+      <NavbarActionIcons />
+    </ShoppingProvider>
+  );
+
   return (
     <header className={`sticky top-0 w-full z-40 ${mobileMenuOpen ? 'z-50' : ''}`}>
       <AnnouncementBar />
@@ -290,7 +298,7 @@ const Navbar = ({ categories }: NavbarProps) => {
           </button>
           
           {/* Icons */}
-          <NavbarActionIcons />
+          <WrappedNavbarActionIcons />
         </div>
         
         {/* Second Row */}
@@ -340,9 +348,9 @@ const Navbar = ({ categories }: NavbarProps) => {
             <NavbarSearchBar />
           </div>
           
-          {/* User Actions - Updated to use NavbarActionIcons */}
+          {/* User Actions - Using the wrapped version */}
           <div className="flex items-center gap-5">
-            <NavbarActionIcons />
+            <WrappedNavbarActionIcons />
             
             {user ? (
               <div className="relative group">

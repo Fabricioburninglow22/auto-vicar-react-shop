@@ -3,12 +3,22 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Menu, Smartphone } from 'lucide-react';
 import { NavbarActionIcons, NavbarSearchBar } from '@/components/layout/NavbarActions';
+import { useShoppingContext } from '@/contexts/ShoppingContext';
 
 interface MobileHeaderProps {
   openMobileMenu: () => void;
 }
 
 const MobileHeader = ({ openMobileMenu }: MobileHeaderProps) => {
+  // Check if ShoppingContext is available
+  let shoppingContextAvailable = false;
+  try {
+    useShoppingContext();
+    shoppingContextAvailable = true;
+  } catch (e) {
+    // ShoppingContext is not available
+  }
+
   return (
     <div className="lg:hidden">
       {/* First Row */}
@@ -25,8 +35,14 @@ const MobileHeader = ({ openMobileMenu }: MobileHeaderProps) => {
           <Menu className="w-6 h-6" />
         </button>
         
-        {/* Icons */}
-        <NavbarActionIcons />
+        {/* Icons - Only render NavbarActionIcons if ShoppingContext is available */}
+        {shoppingContextAvailable ? (
+          <NavbarActionIcons />
+        ) : (
+          <div className="w-[88px] flex justify-end">
+            {/* This is a placeholder with the same width to maintain layout */}
+          </div>
+        )}
       </div>
       
       {/* Second Row */}

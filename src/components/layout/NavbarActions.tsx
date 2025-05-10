@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Search, Bell, Heart, ShoppingCart } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -47,7 +48,19 @@ export const NavbarActionIcons = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { cartCount, favoritesCount } = useShoppingContext();
+  
+  let cartCount = 0;
+  let favoritesCount = 0;
+  
+  // Try to use the shopping context, but provide fallbacks if it's not available
+  try {
+    const shoppingContext = useShoppingContext();
+    cartCount = shoppingContext.cartCount;
+    favoritesCount = shoppingContext.favoritesCount;
+  } catch (e) {
+    // If ShoppingContext is not available, use default values
+    console.warn("ShoppingContext not available in NavbarActionIcons, using fallbacks");
+  }
   
   // For notifications, we'll keep using a mock value for now
   const notificationsCount = 0;
