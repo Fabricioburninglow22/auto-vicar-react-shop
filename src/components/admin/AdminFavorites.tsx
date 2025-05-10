@@ -10,7 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { BarChart } from '@/components/ui/chart';
+import { BarChart } from '@/components/ui/chart-components';
 
 const AdminFavorites = () => {
   // Mock data for product in favorites
