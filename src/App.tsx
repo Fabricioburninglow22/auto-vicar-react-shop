@@ -54,7 +54,6 @@ const App = () => (
               <Route path="/admin/pedidos" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
               <Route path="/admin/favoritos" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
               <Route path="/admin/configuracion" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
-              <Route path="/admin/*" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
               
               {/* Catch-all route */}
               <Route path="*" element={<NotFound />} />

@@ -1,21 +1,20 @@
 
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
   Home, 
   Package, 
   Tag, 
   Users, 
+  Bell, 
+  Calendar, 
   ShoppingBag, 
   Heart, 
-  Bell, 
   Settings, 
   LayoutDashboard, 
-  LogOut, 
-  Calendar
+  LogOut 
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 
 const AdminSidebar = () => {
@@ -52,6 +51,7 @@ const AdminSidebar = () => {
     { name: 'Configuración', path: '/admin/configuracion', icon: Settings },
   ];
   
+  // This function checks if the current path matches the menu item path
   const isActive = (path: string) => {
     if (path === '/admin' && location.pathname === '/admin') {
       return true;

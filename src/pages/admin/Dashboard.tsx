@@ -1,5 +1,6 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AdminLayout from '@/components/admin/AdminLayout';
 import DashboardStats from '@/components/admin/DashboardStats';
@@ -15,14 +16,50 @@ import AdminFavorites from '@/components/admin/AdminFavorites';
 import AdminSettings from '@/components/admin/AdminSettings';
 
 const Dashboard = () => {
-  const [activeTab, setActiveTab] = useState("dashboard");
+  const navigate = useNavigate();
+  const location = useLocation();
+  
+  // Extract the active tab from the URL path
+  const getActiveTab = () => {
+    const path = location.pathname;
+    if (path === '/admin') return 'dashboard';
+    if (path.includes('/admin/productos')) return 'productos';
+    if (path.includes('/admin/categorias')) return 'categorias';
+    if (path.includes('/admin/usuarios')) return 'usuarios';
+    if (path.includes('/admin/anuncios')) return 'anuncios';
+    if (path.includes('/admin/banners')) return 'banners';
+    if (path.includes('/admin/pedidos')) return 'pedidos';
+    if (path.includes('/admin/favoritos')) return 'favoritos';
+    if (path.includes('/admin/configuracion')) return 'configuracion';
+    return 'dashboard';
+  };
+  
+  const [activeTab, setActiveTab] = useState(getActiveTab());
+  
+  // Update the active tab when the location changes
+  useEffect(() => {
+    setActiveTab(getActiveTab());
+  }, [location.pathname]);
+  
+  // Update the URL when the active tab changes
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+    switch (value) {
+      case 'dashboard':
+        navigate('/admin');
+        break;
+      default:
+        navigate(`/admin/${value}`);
+        break;
+    }
+  };
   
   return (
     <AdminLayout>
       <div className="p-6">
         <h1 className="text-2xl font-bold mb-6">Panel de Administración</h1>
         
-        <Tabs defaultValue="dashboard" value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
           <TabsList className="grid grid-cols-3 md:grid-cols-5 lg:grid-cols-9 mb-8">
             <TabsTrigger value="dashboard" className="flex items-center gap-2">
               <LayoutDashboard className="w-4 h-4" />
