@@ -46,6 +46,14 @@ const App = () => (
               
               {/* Admin Routes */}
               <Route path="/admin" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
+              <Route path="/admin/productos" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
+              <Route path="/admin/categorias" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
+              <Route path="/admin/usuarios" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
+              <Route path="/admin/anuncios" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
+              <Route path="/admin/banners" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
+              <Route path="/admin/pedidos" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
+              <Route path="/admin/favoritos" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
+              <Route path="/admin/configuracion" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
               <Route path="/admin/*" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
               
               {/* Catch-all route */}

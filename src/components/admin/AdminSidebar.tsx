@@ -47,13 +47,19 @@ const AdminSidebar = () => {
     { name: 'Usuarios', path: '/admin/usuarios', icon: Users },
     { name: 'Anuncios', path: '/admin/anuncios', icon: Bell },
     { name: 'Banners', path: '/admin/banners', icon: Calendar },
-    { name: 'Carrito', path: '/admin/carritos', icon: ShoppingBag },
+    { name: 'Pedidos', path: '/admin/pedidos', icon: ShoppingBag },
     { name: 'Favoritos', path: '/admin/favoritos', icon: Heart },
     { name: 'Configuración', path: '/admin/configuracion', icon: Settings },
   ];
   
   const isActive = (path: string) => {
-    return location.pathname === path;
+    if (path === '/admin' && location.pathname === '/admin') {
+      return true;
+    }
+    if (path !== '/admin' && location.pathname.startsWith(path)) {
+      return true;
+    }
+    return false;
   };
   
   return (

@@ -4,7 +4,15 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AdminLayout from '@/components/admin/AdminLayout';
 import DashboardStats from '@/components/admin/DashboardStats';
 import RecentActivity from '@/components/admin/RecentActivity';
-import { Package, Tag, Bell, LayoutDashboard, Users, ShoppingBag, Calendar } from 'lucide-react';
+import { Package, Tag, Bell, LayoutDashboard, Users, ShoppingBag, Heart, Calendar, Settings } from 'lucide-react';
+import AdminProducts from '@/components/admin/AdminProducts';
+import AdminCategories from '@/components/admin/AdminCategories';
+import AdminUsers from '@/components/admin/AdminUsers';
+import AdminAnnouncements from '@/components/admin/AdminAnnouncements';
+import AdminBanners from '@/components/admin/AdminBanners';
+import AdminOrders from '@/components/admin/AdminOrders';
+import AdminFavorites from '@/components/admin/AdminFavorites';
+import AdminSettings from '@/components/admin/AdminSettings';
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
@@ -15,7 +23,7 @@ const Dashboard = () => {
         <h1 className="text-2xl font-bold mb-6">Panel de Administración</h1>
         
         <Tabs defaultValue="dashboard" value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid grid-cols-7 mb-8">
+          <TabsList className="grid grid-cols-3 md:grid-cols-5 lg:grid-cols-9 mb-8">
             <TabsTrigger value="dashboard" className="flex items-center gap-2">
               <LayoutDashboard className="w-4 h-4" />
               <span className="hidden sm:inline">Dashboard</span>
@@ -40,9 +48,17 @@ const Dashboard = () => {
               <Calendar className="w-4 h-4" />
               <span className="hidden sm:inline">Banners</span>
             </TabsTrigger>
-            <TabsTrigger value="carritos" className="flex items-center gap-2">
+            <TabsTrigger value="pedidos" className="flex items-center gap-2">
               <ShoppingBag className="w-4 h-4" />
               <span className="hidden sm:inline">Pedidos</span>
+            </TabsTrigger>
+            <TabsTrigger value="favoritos" className="flex items-center gap-2">
+              <Heart className="w-4 h-4" />
+              <span className="hidden sm:inline">Favoritos</span>
+            </TabsTrigger>
+            <TabsTrigger value="configuracion" className="flex items-center gap-2">
+              <Settings className="w-4 h-4" />
+              <span className="hidden sm:inline">Config.</span>
             </TabsTrigger>
           </TabsList>
           
@@ -56,57 +72,35 @@ const Dashboard = () => {
           </TabsContent>
           
           <TabsContent value="productos" className="mt-0">
-            <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-xl font-semibold mb-4">Administración de Productos</h2>
-              <p className="text-gray-500">
-                Aquí se mostrarán los productos disponibles en el catálogo y se podrán crear, editar o eliminar productos.
-              </p>
-            </div>
+            <AdminProducts />
           </TabsContent>
           
           <TabsContent value="categorias" className="mt-0">
-            <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-xl font-semibold mb-4">Gestión de Categorías</h2>
-              <p className="text-gray-500">
-                Administra las categorías y subcategorías de productos para organizar el catálogo.
-              </p>
-            </div>
+            <AdminCategories />
           </TabsContent>
           
           <TabsContent value="usuarios" className="mt-0">
-            <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-xl font-semibold mb-4">Administración de Usuarios</h2>
-              <p className="text-gray-500">
-                Gestiona los usuarios de la plataforma y sus roles.
-              </p>
-            </div>
+            <AdminUsers />
           </TabsContent>
           
           <TabsContent value="anuncios" className="mt-0">
-            <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-xl font-semibold mb-4">Gestión de Anuncios</h2>
-              <p className="text-gray-500">
-                Configura los anuncios que aparecerán en la barra superior del sitio.
-              </p>
-            </div>
+            <AdminAnnouncements />
           </TabsContent>
           
           <TabsContent value="banners" className="mt-0">
-            <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-xl font-semibold mb-4">Gestión de Banners</h2>
-              <p className="text-gray-500">
-                Administra los banners promocionales que aparecerán en diferentes secciones del sitio.
-              </p>
-            </div>
+            <AdminBanners />
           </TabsContent>
           
-          <TabsContent value="carritos" className="mt-0">
-            <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-xl font-semibold mb-4">Gestión de Pedidos</h2>
-              <p className="text-gray-500">
-                Visualiza y gestiona los pedidos realizados por los clientes.
-              </p>
-            </div>
+          <TabsContent value="pedidos" className="mt-0">
+            <AdminOrders />
+          </TabsContent>
+          
+          <TabsContent value="favoritos" className="mt-0">
+            <AdminFavorites />
+          </TabsContent>
+          
+          <TabsContent value="configuracion" className="mt-0">
+            <AdminSettings />
           </TabsContent>
         </Tabs>
       </div>
