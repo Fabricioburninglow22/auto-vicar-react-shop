@@ -16,6 +16,10 @@ import Cart from "./pages/Cart";
 import Notifications from "./pages/Notifications";
 import ProductDetails from "./pages/ProductDetails";
 
+// Admin Pages
+import AdminDashboard from "./pages/admin/Dashboard";
+import AdminGuard from "./guards/AdminGuard";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -37,6 +41,10 @@ const App = () => (
             <Route path="/favoritos" element={<AuthGuard><Favorites /></AuthGuard>} />
             <Route path="/carrito" element={<AuthGuard><Cart /></AuthGuard>} />
             <Route path="/notificaciones" element={<AuthGuard><Notifications /></AuthGuard>} />
+            
+            {/* Admin Routes */}
+            <Route path="/admin" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
+            <Route path="/admin/*" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
             
             {/* Catch-all route */}
             <Route path="*" element={<NotFound />} />

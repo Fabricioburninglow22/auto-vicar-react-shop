@@ -22,7 +22,7 @@ export const NavbarSearchBar = () => {
         description: "Necesitas iniciar sesión para buscar productos",
         variant: "destructive",
       });
-      navigate('/auth');
+      navigate('/auth', { state: { from: '/productos', searchQuery: searchQuery.trim() } });
       return;
     }
     
@@ -36,7 +36,7 @@ export const NavbarSearchBar = () => {
         type="text" 
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
-        placeholder="Buscar"
+        placeholder="Buscar productos..."
         className="w-full py-2 pl-10 pr-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-vicar-blue focus:border-vicar-blue"
       />
     </form>
@@ -47,6 +47,11 @@ export const NavbarActionIcons = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+  
+  // You might want to get this from a context or API in a real app
+  const cartCount = 0;
+  const favoritesCount = 0;
+  const notificationsCount = 0;
 
   const handleRestrictedAction = (path: string, actionName: string) => {
     if (!user) {
@@ -55,7 +60,7 @@ export const NavbarActionIcons = () => {
         description: `Necesitas iniciar sesión para acceder a ${actionName}`,
         variant: "destructive",
       });
-      navigate('/auth');
+      navigate('/auth', { state: { from: path } });
       return false;
     }
     navigate(path);
@@ -67,26 +72,38 @@ export const NavbarActionIcons = () => {
       <button 
         onClick={() => handleRestrictedAction('/notificaciones', 'notificaciones')}
         aria-label="Notificaciones"
-        className="text-gray-700 hover:text-vicar-blue transition-colors"
+        className="text-gray-700 hover:text-vicar-blue transition-colors relative"
       >
         <Bell className="w-6 h-6" />
+        {notificationsCount > 0 && (
+          <span className="absolute -top-1 -right-1 bg-vicar-blue text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">
+            {notificationsCount}
+          </span>
+        )}
       </button>
       <button 
         onClick={() => handleRestrictedAction('/favoritos', 'favoritos')}
         aria-label="Favoritos"
-        className="text-gray-700 hover:text-vicar-blue transition-colors"
+        className="text-gray-700 hover:text-vicar-blue transition-colors relative"
       >
         <Heart className="w-6 h-6" />
+        {favoritesCount > 0 && (
+          <span className="absolute -top-1 -right-1 bg-vicar-blue text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">
+            {favoritesCount}
+          </span>
+        )}
       </button>
       <button 
         onClick={() => handleRestrictedAction('/carrito', 'carrito de compras')}
         aria-label="Carrito de compras" 
-        className="relative text-gray-700 hover:text-vicar-blue transition-colors"
+        className="text-gray-700 hover:text-vicar-blue transition-colors relative"
       >
         <ShoppingCart className="w-6 h-6" />
-        <span className="absolute -top-1 -right-1 bg-vicar-blue text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">
-          0
-        </span>
+        {cartCount > 0 && (
+          <span className="absolute -top-1 -right-1 bg-vicar-blue text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">
+            {cartCount}
+          </span>
+        )}
       </button>
     </div>
   );

@@ -28,16 +28,20 @@ export const useProductInteraction = () => {
         title: "Añadido a favoritos",
         description: productName,
       });
+      
+      // In a real implementation, you'd make an API call here and update the count in header
     }
   };
   
-  const addToCart = (productId: string, productName: string) => {
+  const addToCart = (productId: string, productName: string, quantity: number = 1) => {
     if (requireAuth('añadir productos al carrito')) {
       // Here would go the actual logic to add to cart
       toast({
         title: "Añadido al carrito",
-        description: productName,
+        description: `${productName} (${quantity})`,
       });
+      
+      // In a real implementation, you'd make an API call here and update the count in header
     }
   };
   
@@ -67,3 +71,5 @@ export const useProductInteraction = () => {
     requireAuth
   };
 };
+
+export default useProductInteraction;

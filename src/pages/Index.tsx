@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import Navbar from '../components/layout/navbar';
 import Footer from '../components/layout/Footer';
@@ -103,6 +104,7 @@ const Index = () => {
         <Hero />
         <BrandShowcase />
         <PromoBanner />
+        {/* Show Categories component to all users */}
         <Categories />
         <BestSellers />
         <NewArrivalsOffers />

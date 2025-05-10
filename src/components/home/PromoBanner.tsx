@@ -1,6 +1,8 @@
 
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthProvider';
+import { useToast } from '@/hooks/use-toast';
 
 const PromoBanner = () => {
   const offers = [
@@ -12,6 +14,9 @@ const PromoBanner = () => {
   ];
   
   const [currentOffer, setCurrentOffer] = useState(0);
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const { toast } = useToast();
   
   useEffect(() => {
     const interval = setInterval(() => {
@@ -20,6 +25,20 @@ const PromoBanner = () => {
     
     return () => clearInterval(interval);
   }, [offers.length]);
+  
+  const handleViewOffers = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (!user) {
+      toast({
+        title: "Acceso restringido",
+        description: "Necesitas iniciar sesión para ver ofertas",
+        variant: "destructive",
+      });
+      navigate('/auth', { state: { from: '/productos?offers=true' } });
+    } else {
+      navigate('/productos?offers=true');
+    }
+  };
   
   return (
     <section className="bg-vicar-blue text-white py-8 md:py-12">
@@ -41,12 +60,12 @@ const PromoBanner = () => {
           ))}
         </div>
         
-        <Link 
-          to="/productos?offers=true"
+        <button 
+          onClick={handleViewOffers}
           className="inline-block bg-white text-vicar-blue font-bold py-3 px-8 rounded-md hover:bg-gray-100 transition-colors"
         >
           Ver Ofertas
-        </Link>
+        </button>
       </div>
     </section>
   );

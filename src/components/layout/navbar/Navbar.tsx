@@ -84,6 +84,7 @@ const Navbar = ({ categories }: NavbarProps) => {
         activeDropdown={activeDropdown}
         setActiveDropdown={setActiveDropdown}
         isScrolled={isScrolled}
+        openMobileMenu={() => setMobileMenuOpen(true)}
       />
       
       {/* Mobile Menu */}

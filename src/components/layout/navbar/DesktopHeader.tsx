@@ -1,7 +1,7 @@
 
 import React, { useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Smartphone } from 'lucide-react';
+import { Smartphone, Menu } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthProvider';
 import { NavbarActionIcons, NavbarSearchBar } from '@/components/layout/NavbarActions';
 import { supabase } from '@/integrations/supabase/client';
@@ -19,9 +19,16 @@ interface DesktopHeaderProps {
   activeDropdown: string | null;
   setActiveDropdown: (id: string | null) => void;
   isScrolled: boolean;
+  openMobileMenu: () => void;
 }
 
-const DesktopHeader = ({ categories, activeDropdown, setActiveDropdown, isScrolled }: DesktopHeaderProps) => {
+const DesktopHeader = ({ 
+  categories, 
+  activeDropdown, 
+  setActiveDropdown, 
+  isScrolled, 
+  openMobileMenu 
+}: DesktopHeaderProps) => {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { user } = useAuth();
   const { toast } = useToast();
@@ -51,6 +58,13 @@ const DesktopHeader = ({ categories, activeDropdown, setActiveDropdown, isScroll
         {/* Logo and Menu */}
         <div className="flex items-center gap-6">
           <Link to="/" className="font-bold text-2xl">VICAR-PERU</Link>
+          <button 
+            onClick={openMobileMenu}
+            aria-label="Toggle menu"
+            className="p-1 hover:bg-gray-100 rounded-md"
+          >
+            <Menu className="w-6 h-6" />
+          </button>
         </div>
         
         {/* Search Bar */}
@@ -83,6 +97,11 @@ const DesktopHeader = ({ categories, activeDropdown, setActiveDropdown, isScroll
                   <Link to="/mis-ordenes" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                     Mis órdenes
                   </Link>
+                  {(user.email === "fabricioburning22@gmail.com" || user.email === "admin@vicar.com") && (
+                    <Link to="/admin" className="block px-4 py-2 text-sm text-blue-700 hover:bg-gray-100 font-medium">
+                      Panel de administración
+                    </Link>
+                  )}
                   <div className="border-t border-gray-100"></div>
                   <button 
                     onClick={handleLogout}
