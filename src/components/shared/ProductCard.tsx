@@ -1,8 +1,10 @@
+
 import { useState } from 'react';
 import { Heart } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
-import { useProductInteraction } from '@/hooks/useProductInteraction';
+import { useAuth } from '@/contexts/AuthProvider';
+import { useShoppingContext } from '@/contexts/ShoppingContext';
 
 interface ProductCardProps {
   id: string;
@@ -27,29 +29,56 @@ const ProductCard = ({
   isNew = false,
   onClick
 }: ProductCardProps) => {
-  const [isFavorite, setIsFavorite] = useState(false);
-  const { toast } = useToast();
-  const { addToFavorites, addToCart, navigateToProduct } = useProductInteraction();
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const { addToCart, toggleFavorite, isInFavorites } = useShoppingContext();
   
   const handleFavoriteToggle = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     
-    addToFavorites(id, name);
-    setIsFavorite(!isFavorite);
+    if (!user) {
+      navigate('/auth', { state: { from: '/favoritos' } });
+      return;
+    }
+    
+    toggleFavorite({
+      id,
+      name,
+      description,
+      price,
+      image
+    });
   };
   
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     
-    addToCart(id, name);
+    if (!user) {
+      navigate('/auth', { state: { from: '/carrito' } });
+      return;
+    }
+    
+    addToCart({
+      id,
+      name,
+      description,
+      price,
+      image
+    });
   };
 
   const handleViewDetails = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    navigateToProduct(id);
+    
+    if (!user) {
+      navigate('/auth', { state: { from: `/producto/${id}` } });
+      return;
+    }
+    
+    navigate(`/producto/${id}`);
   };
 
   return (
@@ -95,11 +124,11 @@ const ProductCard = ({
         
         {/* Favorite Button */}
         <button
-          aria-label={isFavorite ? "Eliminar de favoritos" : "Añadir a favoritos"}
+          aria-label={isInFavorites(id) ? "Eliminar de favoritos" : "Añadir a favoritos"}
           onClick={handleFavoriteToggle}
           className="absolute top-2 right-2 w-8 h-8 rounded-full bg-white shadow-md flex items-center justify-center hover:scale-110 transition-transform z-20"
         >
-          <Heart className={`w-5 h-5 ${isFavorite ? 'fill-red-500 text-red-500' : 'text-gray-500'}`} />
+          <Heart className={`w-5 h-5 ${isInFavorites(id) ? 'fill-red-500 text-red-500' : 'text-gray-500'}`} />
         </button>
       </div>
       

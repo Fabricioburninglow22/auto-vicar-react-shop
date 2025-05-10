@@ -1,59 +1,17 @@
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
 import { ShoppingCart, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-
-interface CartItem {
-  id: string;
-  name: string;
-  price: number;
-  image: string;
-  quantity: number;
-}
+import { useShoppingContext } from '@/contexts/ShoppingContext';
 
 const Cart = () => {
-  // Sample cart data - in a real app, this would come from a database or state management
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    // Simulate loading cart items
-    setTimeout(() => {
-      setCartItems([
-        {
-          id: 'prod-1',
-          name: 'Alarma Viper 3305V',
-          price: 349.99,
-          image: 'https://images.unsplash.com/photo-1583121274602-3e2820c69888?q=80&w=1470&auto=format&fit=crop',
-          quantity: 1,
-        },
-        {
-          id: 'prod-3',
-          name: 'Autoradio Pioneer AVH-X595BT',
-          price: 299.99,
-          image: 'https://images.unsplash.com/photo-1609132718484-cc90df3417f8?q=80&w=1374&auto=format&fit=crop',
-          quantity: 2,
-        }
-      ]);
-      setLoading(false);
-    }, 800);
-  }, []);
-
-  const removeItem = (id: string) => {
-    setCartItems(cartItems.filter(item => item.id !== id));
-  };
-
-  const updateQuantity = (id: string, newQuantity: number) => {
-    if (newQuantity < 1) return;
-    setCartItems(cartItems.map(item => 
-      item.id === id ? { ...item, quantity: newQuantity } : item
-    ));
-  };
+  const { cartItems, removeFromCart, updateCartItemQuantity } = useShoppingContext();
+  const [loading, setLoading] = useState(false);
 
   const calculateTotal = () => {
-    return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+    return cartItems.reduce((total, item) => total + (item.price * (item.quantity || 1)), 0);
   };
 
   return (
@@ -84,29 +42,29 @@ const Cart = () => {
                     <div className="flex items-center mt-3">
                       <button 
                         className="w-8 h-8 border rounded-l-md flex items-center justify-center"
-                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                        onClick={() => updateCartItemQuantity(item.id, (item.quantity || 1) - 1)}
                       >
                         -
                       </button>
                       <span className="w-10 h-8 border-t border-b flex items-center justify-center">
-                        {item.quantity}
+                        {item.quantity || 1}
                       </span>
                       <button 
                         className="w-8 h-8 border rounded-r-md flex items-center justify-center"
-                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                        onClick={() => updateCartItemQuantity(item.id, (item.quantity || 1) + 1)}
                       >
                         +
                       </button>
                       <button 
                         className="ml-4 text-red-500 hover:text-red-700"
-                        onClick={() => removeItem(item.id)}
+                        onClick={() => removeFromCart(item.id)}
                       >
                         <Trash2 className="w-5 h-5" />
                       </button>
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="font-bold">S/ {(item.price * item.quantity).toFixed(2)}</p>
+                    <p className="font-bold">S/ {(item.price * (item.quantity || 1)).toFixed(2)}</p>
                   </div>
                 </div>
               ))}

@@ -1,9 +1,9 @@
-
 import { useState } from 'react';
 import { Search, Bell, Heart, ShoppingCart } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthProvider';
 import { useToast } from '@/hooks/use-toast';
+import { useShoppingContext } from '@/contexts/ShoppingContext';
 
 export const NavbarSearchBar = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -47,10 +47,9 @@ export const NavbarActionIcons = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { cartCount, favoritesCount } = useShoppingContext();
   
-  // You might want to get this from a context or API in a real app
-  const cartCount = 0;
-  const favoritesCount = 0;
+  // For notifications, we'll keep using a mock value for now
   const notificationsCount = 0;
 
   const handleRestrictedAction = (path: string, actionName: string) => {

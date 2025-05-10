@@ -1,41 +1,12 @@
 
-import { useState, useEffect } from 'react';
 import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
 import ProductCard from '../components/shared/ProductCard';
 import { Heart } from 'lucide-react';
+import { useShoppingContext } from '@/contexts/ShoppingContext';
 
 const Favorites = () => {
-  // Sample favorites data - in a real app, this would come from a database or state management
-  const [favorites, setFavorites] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    // Simulate loading favorites
-    setTimeout(() => {
-      setFavorites([
-        {
-          id: 'prod-1',
-          name: 'Alarma Viper 3305V',
-          description: 'Sistema de alarma con encendido a distancia y 2-way respuesta',
-          price: 349.99,
-          oldPrice: 399.99,
-          image: 'https://images.unsplash.com/photo-1583121274602-3e2820c69888?q=80&w=1470&auto=format&fit=crop',
-          badge: 'Popular',
-          isNew: false,
-        },
-        {
-          id: 'prod-2',
-          name: 'Cámara de retroceso HD',
-          description: 'Visión nocturna y líneas guía para estacionamiento',
-          price: 129.99,
-          image: 'https://images.unsplash.com/photo-1622022526774-22924907a2a7?q=80&w=1471&auto=format&fit=crop',
-          isNew: true,
-        }
-      ]);
-      setLoading(false);
-    }, 800);
-  }, []);
+  const { favorites } = useShoppingContext();
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -47,16 +18,16 @@ const Favorites = () => {
           Mis Favoritos
         </h1>
         
-        {loading ? (
-          <div className="flex justify-center items-center h-64">
-            <div className="loader">Cargando...</div>
-          </div>
-        ) : favorites.length > 0 ? (
+        {favorites.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {favorites.map(product => (
               <ProductCard
                 key={product.id}
-                {...product}
+                id={product.id}
+                name={product.name}
+                description={product.description}
+                price={product.price}
+                image={product.image}
               />
             ))}
           </div>
