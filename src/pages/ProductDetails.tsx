@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
-import { useProductInteraction } from '@/hooks/useProductInteraction';
+import { useShoppingContext } from '@/contexts/ShoppingContext';
 import { Heart, Share2, Check } from 'lucide-react';
 
 interface Product {
@@ -25,7 +25,7 @@ const ProductDetails = () => {
   const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState(0);
   const [isFavorite, setIsFavorite] = useState(false);
-  const { addToCart } = useProductInteraction();
+  const { addToCart, isInFavorites, toggleFavorite } = useShoppingContext();
 
   useEffect(() => {
     // Simulate loading product data
@@ -63,8 +63,36 @@ const ProductDetails = () => {
     }, 1000);
   }, [productId]);
 
-  const toggleFavorite = () => {
-    setIsFavorite(!isFavorite);
+  useEffect(() => {
+    // Check if product is in favorites when product is loaded
+    if (product) {
+      setIsFavorite(isInFavorites(product.id));
+    }
+  }, [product, isInFavorites]);
+
+  const handleToggleFavorite = () => {
+    if (product) {
+      const newIsFavorite = toggleFavorite({
+        id: product.id,
+        name: product.name,
+        description: product.description,
+        price: product.price,
+        image: product.images[0]
+      });
+      setIsFavorite(newIsFavorite);
+    }
+  };
+
+  const handleAddToCart = () => {
+    if (product) {
+      addToCart({
+        id: product.id,
+        name: product.name,
+        description: product.description,
+        price: product.price,
+        image: product.images[0]
+      });
+    }
   };
 
   if (loading || !product) {
@@ -138,7 +166,7 @@ const ProductDetails = () => {
             
             <div className="space-y-4 mb-6">
               <button 
-                onClick={() => addToCart(product.id, product.name)}
+                onClick={handleAddToCart}
                 className="w-full bg-vicar-blue text-white py-3 rounded-md hover:bg-blue-700 transition-colors font-medium"
               >
                 Solicitar Cotización
@@ -146,7 +174,7 @@ const ProductDetails = () => {
               
               <div className="flex gap-2">
                 <button 
-                  onClick={toggleFavorite}
+                  onClick={handleToggleFavorite}
                   className={`flex-1 py-3 rounded-md border font-medium flex items-center justify-center gap-2 ${
                     isFavorite ? 'bg-red-50 border-red-200 text-red-600' : 'border-gray-300 hover:bg-gray-50'
                   }`}
