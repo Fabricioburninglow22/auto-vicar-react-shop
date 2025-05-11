@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -155,6 +154,14 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSuccess, onCan
         });
       } else {
         setBrands(brandsData || []);
+        
+        // Si no hay marcas, muestra un mensaje
+        if (!brandsData || brandsData.length === 0) {
+          toast({
+            title: 'Aviso',
+            description: 'No hay marcas disponibles. Por favor, cree al menos una marca antes de continuar.',
+          });
+        }
       }
     };
     
@@ -236,6 +243,15 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSuccess, onCan
       toast({ title: 'Error', description: 'Debe seleccionar una marca', variant: 'destructive' });
       return false;
     }
+    // Si no hay marcas disponibles
+    if (brands.length === 0) {
+      toast({ 
+        title: 'Error', 
+        description: 'No hay marcas disponibles. Por favor, cree al menos una marca antes de continuar.',
+        variant: 'destructive' 
+      });
+      return false;
+    }
     
     return true;
   };
@@ -258,7 +274,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSuccess, onCan
         sale_start_date: saleStartDate ? saleStartDate.toISOString() : null,
         sale_end_date: saleEndDate ? saleEndDate.toISOString() : null,
         category_id: categoryId || null,
-        subcategory_id: subcategoryId || null,
+        subcategory_id: subcategoryId === 'none' ? null : subcategoryId || null,
         brand_id: brandId || null,
         is_active: isActive,
         is_featured: isFeatured,
@@ -467,13 +483,22 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSuccess, onCan
                 <SelectValue placeholder="Seleccionar categoría" />
               </SelectTrigger>
               <SelectContent>
-                {categories.map((category) => (
-                  <SelectItem key={category.id} value={category.id}>
-                    {category.name} ({category.prefix})
-                  </SelectItem>
-                ))}
+                {categories.length === 0 ? (
+                  <SelectItem value="no-categories">No hay categorías disponibles</SelectItem>
+                ) : (
+                  categories.map((category) => (
+                    <SelectItem key={category.id} value={category.id}>
+                      {category.name} ({category.prefix})
+                    </SelectItem>
+                  ))
+                )}
               </SelectContent>
             </Select>
+            {categories.length === 0 && (
+              <p className="text-xs text-red-500 mt-1">
+                No hay categorías disponibles. Por favor, cree al menos una categoría.
+              </p>
+            )}
           </div>
           
           <div>
@@ -481,13 +506,12 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSuccess, onCan
             <Select 
               value={subcategoryId} 
               onValueChange={setSubcategoryId}
-              disabled={!categoryId || filteredSubcategories.length === 0}
+              disabled={!categoryId || (filteredSubcategories.length === 0 && categoryId !== "no-categories")}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Seleccionar subcategoría" />
               </SelectTrigger>
               <SelectContent>
-                {/* Added a default option with non-empty value */}
                 <SelectItem value="none">Sin subcategoría</SelectItem>
                 {filteredSubcategories.map((subcategory) => (
                   <SelectItem key={subcategory.id} value={subcategory.id}>
@@ -508,13 +532,22 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSuccess, onCan
                 <SelectValue placeholder="Seleccionar marca" />
               </SelectTrigger>
               <SelectContent>
-                {brands.map((brand) => (
-                  <SelectItem key={brand.id} value={brand.id}>
-                    {brand.name} ({brand.prefix})
-                  </SelectItem>
-                ))}
+                {brands.length === 0 ? (
+                  <SelectItem value="no-brands">No hay marcas disponibles</SelectItem>
+                ) : (
+                  brands.map((brand) => (
+                    <SelectItem key={brand.id} value={brand.id}>
+                      {brand.name} ({brand.prefix})
+                    </SelectItem>
+                  ))
+                )}
               </SelectContent>
             </Select>
+            {brands.length === 0 && (
+              <p className="text-xs text-red-500 mt-1">
+                No hay marcas disponibles. Por favor, cree al menos una marca primero.
+              </p>
+            )}
           </div>
           
           <div>
@@ -574,7 +607,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSuccess, onCan
         <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>
           Cancelar
         </Button>
-        <Button type="submit" disabled={isSubmitting}>
+        <Button type="submit" disabled={isSubmitting || brands.length === 0 || categories.length === 0}>
           {isSubmitting && (
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
           )}

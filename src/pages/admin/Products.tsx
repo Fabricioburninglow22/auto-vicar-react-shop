@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -49,7 +48,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { Search, Plus, Filter, MoreVertical, Loader2, Check, X } from "lucide-react";
+import { Search, Plus, Filter, MoreVertical, Loader2, Check, X, AlertCircle } from "lucide-react";
 import { supabase } from '@/integrations/supabase/client';
 import AdminLayout from '@/components/admin/AdminLayout';
 import ProductForm from '@/components/admin/ProductForm';
@@ -89,7 +88,7 @@ const ProductsPage = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [brands, setBrands] = useState<Brand[]>([]);
+    const [brands, setBrands] = useState<Brand[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isDeleting, setIsDeleting] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -105,7 +104,7 @@ const ProductsPage = () => {
   useEffect(() => {
     fetchProducts();
     fetchCategories();
-    fetchBrands();
+        fetchBrands();
   }, []);
   
   // Apply filters whenever filters or products change
@@ -163,7 +162,7 @@ const ProductsPage = () => {
     }
   };
   
-  const fetchBrands = async () => {
+    const fetchBrands = async () => {
     try {
       const { data, error } = await supabase
         .from('brands')
@@ -173,7 +172,7 @@ const ProductsPage = () => {
         throw error;
       }
       
-      setBrands(data || []);
+            setBrands(data || []);
     } catch (error) {
       console.error('Error fetching brands:', error);
     }
@@ -283,6 +282,29 @@ const ProductsPage = () => {
             <DialogContent className="sm:max-w-4xl">
               <DialogHeader>
                 <DialogTitle>{editingProduct ? 'Editar' : 'Crear'} Producto</DialogTitle>
+                {(!brands || brands.length === 0 || !categories || categories.length === 0) && (
+                  <div className="bg-yellow-50 border border-yellow-200 rounded-md p-3 mt-2 flex items-start">
+                    <AlertCircle className="h-5 w-5 text-yellow-500 mr-2 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <h3 className="text-sm font-medium text-yellow-800">Atención</h3>
+                      <div className="text-sm text-yellow-700 mt-1">
+                        <p>Antes de crear productos, debes tener al menos:</p>
+                        <ul className="list-disc ml-5 mt-1">
+                          {(!categories || categories.length === 0) && (
+                            <li className="mb-1">
+                              Una <a href="/admin/categorias" className="text-blue-600 hover:underline">categoría</a>
+                            </li>
+                          )}
+                          {(!brands || brands.length === 0) && (
+                            <li>
+                              Una <a href="/admin/marcas" className="text-blue-600 hover:underline">marca</a>
+                            </li>
+                          )}
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </DialogHeader>
               <ProductForm
                 initialData={editingProduct || undefined}

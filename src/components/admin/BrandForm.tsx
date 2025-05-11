@@ -21,49 +21,27 @@ const BrandForm: React.FC<BrandFormProps> = ({ initialData, onSuccess, onCancel 
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   
-  // Form state
   const [name, setName] = useState(initialData?.name || '');
   const [prefix, setPrefix] = useState(initialData?.prefix || '');
-  
-  // Errors
-  const [errors, setErrors] = useState({
-    name: '',
-    prefix: '',
-  });
-  
-  const validateForm = () => {
-    let valid = true;
-    const newErrors = {
-      name: '',
-      prefix: '',
-    };
-    
-    if (!name.trim()) {
-      newErrors.name = 'El nombre es obligatorio';
-      valid = false;
-    }
-    
-    if (!prefix.trim()) {
-      newErrors.prefix = 'El prefijo es obligatorio';
-      valid = false;
-    } else if (prefix.length !== 3) {
-      newErrors.prefix = 'El prefijo debe tener exactamente 3 caracteres';
-      valid = false;
-    } else if (prefix !== prefix.toUpperCase()) {
-      newErrors.prefix = 'El prefijo debe estar en mayúsculas';
-      valid = false;
-    }
-    
-    setErrors(newErrors);
-    return valid;
-  };
-  
+
+  // Función para convertir el texto a mayúsculas y limitar a 3 caracteres
   const handlePrefixChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // Convert to uppercase and limit to 3 characters
-    const value = e.target.value.toUpperCase().slice(0, 3);
+    const value = e.target.value.toUpperCase().replace(/[^A-Z]/g, '').slice(0, 3);
     setPrefix(value);
   };
-  
+
+  const validateForm = () => {
+    if (!name) {
+      toast({ title: 'Error', description: 'El nombre de la marca es obligatorio', variant: 'destructive' });
+      return false;
+    }
+    if (!prefix || prefix.length !== 3) {
+      toast({ title: 'Error', description: 'El prefijo debe tener exactamente 3 letras mayúsculas', variant: 'destructive' });
+      return false;
+    }
+    return true;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -120,36 +98,30 @@ const BrandForm: React.FC<BrandFormProps> = ({ initialData, onSuccess, onCancel 
   
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
+      <div className="space-y-2">
         <Label htmlFor="name">Nombre de la Marca *</Label>
         <Input
           id="name"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          placeholder="Ej. Pioneer"
-          className={errors.name ? 'border-red-500' : ''}
+          placeholder="Ej. Sony, Pioneer, Viper"
+          required
         />
-        {errors.name && (
-          <p className="text-red-500 text-sm mt-1">{errors.name}</p>
-        )}
       </div>
       
-      <div>
-        <Label htmlFor="prefix">Prefijo (3 caracteres) *</Label>
+      <div className="space-y-2">
+        <Label htmlFor="prefix">Prefijo (3 letras) *</Label>
         <Input
           id="prefix"
           value={prefix}
           onChange={handlePrefixChange}
-          placeholder="Ej. PIO"
+          placeholder="Ej. SNY, PIO, VIP"
           maxLength={3}
-          className={errors.prefix ? 'border-red-500' : ''}
+          required
         />
-        <p className="text-xs text-gray-500 mt-1">
-          Debe ser exactamente 3 letras en mayúsculas (ej. PIO, SON)
+        <p className="text-xs text-gray-500">
+          El prefijo debe ser de exactamente 3 letras mayúsculas y se utilizará para generar los SKUs de los productos.
         </p>
-        {errors.prefix && (
-          <p className="text-red-500 text-sm mt-1">{errors.prefix}</p>
-        )}
       </div>
       
       <div className="flex justify-end space-x-4 pt-4">
