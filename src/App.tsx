@@ -19,6 +19,14 @@ import ProductDetails from "./pages/ProductDetails";
 
 // Admin Pages
 import AdminDashboard from "./pages/admin/Dashboard";
+import AdminProducts from "./pages/admin/Products";
+import AdminCategories from "./pages/admin/Categories";
+import AdminUsers from "./pages/admin/Users";
+import AdminAnnouncements from "./pages/admin/Announcements";
+import AdminBanners from "./pages/admin/Banners";
+import AdminOrders from "./pages/admin/Orders";
+import AdminFavorites from "./pages/admin/Favorites";
+import AdminSettings from "./pages/admin/Settings";
 import AdminGuard from "./guards/AdminGuard";
 
 const queryClient = new QueryClient();
@@ -46,14 +54,14 @@ const App = () => (
               
               {/* Admin Routes */}
               <Route path="/admin" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
-              <Route path="/admin/productos" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
-              <Route path="/admin/categorias" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
-              <Route path="/admin/usuarios" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
-              <Route path="/admin/anuncios" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
-              <Route path="/admin/banners" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
-              <Route path="/admin/pedidos" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
-              <Route path="/admin/favoritos" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
-              <Route path="/admin/configuracion" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
+              <Route path="/admin/productos" element={<AdminGuard><AdminProducts /></AdminGuard>} />
+              <Route path="/admin/categorias" element={<AdminGuard><AdminCategories /></AdminGuard>} />
+              <Route path="/admin/usuarios" element={<AdminGuard><AdminUsers /></AdminGuard>} />
+              <Route path="/admin/anuncios" element={<AdminGuard><AdminAnnouncements /></AdminGuard>} />
+              <Route path="/admin/banners" element={<AdminGuard><AdminBanners /></AdminGuard>} />
+              <Route path="/admin/pedidos" element={<AdminGuard><AdminOrders /></AdminGuard>} />
+              <Route path="/admin/favoritos" element={<AdminGuard><AdminFavorites /></AdminGuard>} />
+              <Route path="/admin/configuracion" element={<AdminGuard><AdminSettings /></AdminGuard>} />
               
               {/* Catch-all route */}
               <Route path="*" element={<NotFound />} />

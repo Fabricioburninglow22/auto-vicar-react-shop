@@ -53,13 +53,7 @@ const AdminSidebar = () => {
   
   // This function checks if the current path matches the menu item path
   const isActive = (path: string) => {
-    if (path === '/admin' && location.pathname === '/admin') {
-      return true;
-    }
-    if (path !== '/admin' && location.pathname.startsWith(path)) {
-      return true;
-    }
-    return false;
+    return location.pathname === path;
   };
   
   return (
