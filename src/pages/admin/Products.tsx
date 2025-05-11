@@ -93,8 +93,8 @@ const ProductsPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isDeleting, setIsDeleting] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState('');
-  const [brandFilter, setBrandFilter] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('all'); // Changed from '' to 'all'
+  const [brandFilter, setBrandFilter] = useState('all'); // Changed from '' to 'all'
   const [statusFilter, setStatusFilter] = useState('all');
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -193,12 +193,12 @@ const ProductsPage = () => {
     }
     
     // Apply category filter
-    if (categoryFilter) {
+    if (categoryFilter && categoryFilter !== 'all') { // Changed to check against 'all'
       result = result.filter(product => product.category_id === categoryFilter);
     }
     
     // Apply brand filter
-    if (brandFilter) {
+    if (brandFilter && brandFilter !== 'all') { // Changed to check against 'all'
       result = result.filter(product => product.brand_id === brandFilter);
     }
     
@@ -313,7 +313,7 @@ const ProductsPage = () => {
               <SelectValue placeholder="Filtrar por categoría" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Todas las categorías</SelectItem>
+              <SelectItem value="all">Todas las categorías</SelectItem> {/* Changed from '' to 'all' */}
               {categories.map((category) => (
                 <SelectItem key={category.id} value={category.id}>{category.name}</SelectItem>
               ))}
@@ -325,7 +325,7 @@ const ProductsPage = () => {
               <SelectValue placeholder="Filtrar por marca" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Todas las marcas</SelectItem>
+              <SelectItem value="all">Todas las marcas</SelectItem> {/* Changed from '' to 'all' */}
               {brands.map((brand) => (
                 <SelectItem key={brand.id} value={brand.id}>{brand.name}</SelectItem>
               ))}

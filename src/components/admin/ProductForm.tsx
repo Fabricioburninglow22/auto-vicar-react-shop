@@ -487,6 +487,8 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSuccess, onCan
                 <SelectValue placeholder="Seleccionar subcategoría" />
               </SelectTrigger>
               <SelectContent>
+                {/* Added a default option with non-empty value */}
+                <SelectItem value="none">Sin subcategoría</SelectItem>
                 {filteredSubcategories.map((subcategory) => (
                   <SelectItem key={subcategory.id} value={subcategory.id}>
                     {subcategory.name}
