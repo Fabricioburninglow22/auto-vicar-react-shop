@@ -1,6 +1,7 @@
 
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from "@/hooks/use-toast";
+import { isValidSku, formatSku } from '@/utils/sku-validator';
 
 interface ProductFormData {
   id?: string;
@@ -43,8 +44,16 @@ export const validateProductForm = (formData: ProductFormData): boolean => {
     toast({ title: 'Error', description: 'El nombre del producto es obligatorio', variant: 'destructive' });
     return false;
   }
-  if (!formData.sku || !/^[A-Z]{3}-[A-Z]{3}-[A-Z0-9]+$/.test(formData.sku)) {
-    toast({ title: 'Error', description: 'El SKU debe tener el formato AAA-BBB-XXXXX', variant: 'destructive' });
+  if (!formData.sku) {
+    toast({ title: 'Error', description: 'El SKU es obligatorio', variant: 'destructive' });
+    return false;
+  }
+  if (!isValidSku(formData.sku)) {
+    toast({ 
+      title: 'Error', 
+      description: 'El SKU debe tener el formato AAA-BBB-XXXXX (3 letras, guion, 3 letras, guion, alfanumérico)', 
+      variant: 'destructive' 
+    });
     return false;
   }
   if (!formData.price || isNaN(parseFloat(formData.price)) || parseFloat(formData.price) <= 0) {
@@ -149,7 +158,7 @@ export const generateSku = (
     .substring(0, 8) // Limit to 8 chars
     .toUpperCase();
   
-  return `${categoryPrefix}-${brandPrefix}-${productIdentifier || 'XXXXX'}`;
+  return formatSku(categoryPrefix, brandPrefix, productIdentifier || 'XXXXX');
 };
 
 export const fetchProductData = async () => {
