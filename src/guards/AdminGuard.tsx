@@ -1,5 +1,5 @@
 
-import { ReactNode } from 'react';
+import { ReactNode, useEffect } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthProvider';
 import { useToast } from '@/hooks/use-toast';
@@ -14,10 +14,18 @@ const AdminGuard = ({ children, redirectTo = '/auth' }: AdminGuardProps) => {
   const location = useLocation();
   const { toast } = useToast();
   
-  // For now, we'll use a simple check based on email
-  // In a real app, this would check user roles from the database
-  const isAdmin = user?.email === 'fabricioburning22@gmail.com' || user?.email === 'admin@vicar.com';
+  // Para debugging
+  useEffect(() => {
+    if (!user) {
+      console.log("AdminGuard: No hay usuario, redirigiendo a", redirectTo);
+    } else {
+      // Verificamos si el usuario es admin
+      const isAdmin = user.email === 'fabricioburning22@gmail.com' || user.email === 'admin@vicar.com';
+      console.log("AdminGuard: Usuario existente, es admin?", isAdmin);
+    }
+  }, [user, redirectTo]);
   
+  // Si no hay usuario, redirigir a la página de autenticación
   if (!user) {
     toast({
       title: "Acceso restringido",
@@ -25,10 +33,14 @@ const AdminGuard = ({ children, redirectTo = '/auth' }: AdminGuardProps) => {
       variant: "destructive",
     });
     
-    // Save the path the user was trying to access
+    // Guardar la ruta a la que el usuario intentaba acceder
     const currentPath = location.pathname + location.search;
     return <Navigate to={redirectTo} state={{ from: currentPath }} replace />;
   }
+  
+  // Para ahora, verificaremos basado en el email
+  // En una aplicación real, esto verificaría los roles desde la base de datos
+  const isAdmin = user.email === 'fabricioburning22@gmail.com' || user.email === 'admin@vicar.com';
   
   if (!isAdmin) {
     toast({
