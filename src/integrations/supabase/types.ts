@@ -513,6 +513,22 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_brand_id: {
+        Args: { p_name: string }
+        Returns: string
+      }
+      get_category_id: {
+        Args: { p_name: string }
+        Returns: string
+      }
+      get_subcategory_id: {
+        Args: { p_name: string; p_category_id: string }
+        Returns: string
+      }
+      insert_brand_if_not_exists: {
+        Args: { p_name: string; p_prefix: string }
+        Returns: string
+      }
       is_admin: {
         Args: Record<PropertyKey, never>
         Returns: boolean
