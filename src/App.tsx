@@ -16,6 +16,8 @@ import Favorites from "./pages/Favorites";
 import Cart from "./pages/Cart";
 import Notifications from "./pages/Notifications";
 import ProductDetails from "./pages/ProductDetails";
+import Profile from "./pages/user/Profile";
+import Orders from "./pages/user/Orders";
 
 // Admin Pages
 import AdminDashboard from "./pages/admin/Dashboard";
@@ -51,6 +53,10 @@ const App = () => (
               <Route path="/favoritos" element={<AuthGuard><Favorites /></AuthGuard>} />
               <Route path="/carrito" element={<AuthGuard><Cart /></AuthGuard>} />
               <Route path="/notificaciones" element={<AuthGuard><Notifications /></AuthGuard>} />
+              
+              {/* User Account Routes */}
+              <Route path="/mi-perfil" element={<AuthGuard><Profile /></AuthGuard>} />
+              <Route path="/mis-ordenes" element={<AuthGuard><Orders /></AuthGuard>} />
               
               {/* Admin Routes */}
               <Route path="/admin" element={<AdminGuard><AdminDashboard /></AdminGuard>} />

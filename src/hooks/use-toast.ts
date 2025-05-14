@@ -1,9 +1,7 @@
-
 import * as React from "react";
 import {
-  Toast,
-  ToastProps,
   ToastActionElement,
+  ToastProps,
 } from "@/components/ui/toast";
 
 const TOAST_LIMIT = 10;
@@ -142,13 +140,13 @@ function dispatch(action: Action) {
   });
 }
 
-interface Toast {
+type Toast = {
   id: string;
   title?: React.ReactNode;
   description?: React.ReactNode;
   action?: ToastActionElement;
   variant?: "default" | "destructive";
-}
+};
 
 type ToastOptions = Omit<Toast, "id">;
 

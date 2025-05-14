@@ -54,6 +54,20 @@ const MobileMenu = ({ isOpen, onClose, categories, user, handleLogout }: MobileM
                       <p className="font-medium">{user.email}</p>
                     </div>
                   </div>
+                  <Link 
+                    to="/mi-perfil" 
+                    className="block py-2 hover:text-vicar-blue" 
+                    onClick={onClose}
+                  >
+                    Mi perfil
+                  </Link>
+                  <Link 
+                    to="/mis-ordenes" 
+                    className="block py-2 hover:text-vicar-blue" 
+                    onClick={onClose}
+                  >
+                    Mis órdenes
+                  </Link>
                   <button 
                     onClick={handleLogout}
                     className="flex items-center gap-2 py-2 px-3 rounded-md hover:bg-gray-100 text-red-500"
