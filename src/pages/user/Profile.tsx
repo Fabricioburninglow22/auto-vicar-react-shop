@@ -13,11 +13,12 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
+// Define the complete profile interface according to the database schema
 interface ProfileData {
   name: string | null;
   email: string | null;
-  phone?: string | null;
-  address?: string | null;
+  phone: string | null;
+  address: string | null;
 }
 
 const Profile = () => {

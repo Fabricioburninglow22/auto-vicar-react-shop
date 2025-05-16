@@ -1,34 +1,50 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthProvider';
 import { useToast } from '@/hooks/use-toast';
-import { format } from 'date-fns';
-import { es } from 'date-fns/locale';
+import { supabase } from '@/integrations/supabase/client';
 
 // Components
 import { Navbar, Footer } from '@/components/layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface Order {
   id: string;
   created_at: string;
-  status: string;
-  total: number;
+  status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+  total_amount: number;
   order_number: string;
-  items_count: number;
 }
+
+// Mock data for orders until we implement the real orders table
+const mockOrders: Order[] = [
+  {
+    id: '1',
+    created_at: '2025-05-10T12:00:00Z',
+    status: 'delivered',
+    total_amount: 152.50,
+    order_number: 'ORD-2025-0001'
+  },
+  {
+    id: '2',
+    created_at: '2025-05-05T15:30:00Z',
+    status: 'shipped',
+    total_amount: 87.25,
+    order_number: 'ORD-2025-0002'
+  },
+  {
+    id: '3',
+    created_at: '2025-04-28T09:15:00Z',
+    status: 'processing',
+    total_amount: 210.00,
+    order_number: 'ORD-2025-0003'
+  }
+];
 
 const Orders = () => {
   const { user } = useAuth();
@@ -38,95 +54,66 @@ const Orders = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    // In the future, replace this with actual order data from Supabase
+    const fetchOrders = async () => {
+      try {
+        // Simulate network delay
+        setTimeout(() => {
+          setOrders(mockOrders);
+          setIsLoading(false);
+        }, 1000);
+        
+        // When we have a real orders table, use this:
+        // const { data, error } = await supabase
+        //   .from('orders')
+        //   .select('*')
+        //   .eq('user_id', user?.id)
+        //   .order('created_at', { ascending: false });
+        
+        // if (error) throw error;
+        // setOrders(data || []);
+      } catch (error: any) {
+        console.error('Error fetching orders:', error.message);
+        toast({
+          title: "Error",
+          description: "No se pudieron cargar tus órdenes",
+          variant: "destructive"
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
     if (user) {
       fetchOrders();
     }
   }, [user]);
 
-  const fetchOrders = async () => {
-    try {
-      setIsLoading(true);
-      
-      // Este es un ejemplo. En una implementación real, recuperaríamos órdenes desde la base de datos
-      // Aquí simulamos datos de ejemplo
-      const mockOrders: Order[] = [
-        {
-          id: '1',
-          created_at: new Date(2024, 3, 15).toISOString(),
-          status: 'completed',
-          total: 320.50,
-          order_number: 'OC-2024-001',
-          items_count: 3
-        },
-        {
-          id: '2',
-          created_at: new Date(2024, 4, 5).toISOString(),
-          status: 'processing',
-          total: 120.75,
-          order_number: 'OC-2024-002',
-          items_count: 1
-        },
-        {
-          id: '3',
-          created_at: new Date(2024, 4, 10).toISOString(),
-          status: 'pending',
-          total: 450.00,
-          order_number: 'OC-2024-003',
-          items_count: 2
-        }
-      ];
-      
-      // Simulamos tiempo de carga
-      setTimeout(() => {
-        setOrders(mockOrders);
-        setIsLoading(false);
-      }, 500);
-      
-    } catch (error: any) {
-      console.error('Error fetching orders:', error.message);
-      toast({
-        title: "Error",
-        description: "No se pudieron cargar tus órdenes",
-        variant: "destructive"
-      });
-      setIsLoading(false);
-    }
-  };
-
-  // Función para devolver el color de la insignia según el estado
-  const getStatusBadgeVariant = (status: string) => {
-    switch (status) {
-      case 'completed':
-        return 'default';
-      case 'processing':
-        return 'outline';
-      case 'pending':
-        return 'secondary';
-      case 'cancelled':
-        return 'destructive';
-      default:
-        return 'outline';
-    }
-  };
-
-  // Traducir el estado
-  const translateStatus = (status: string) => {
-    const statusMap: Record<string, string> = {
-      'completed': 'Completado',
-      'processing': 'En proceso',
-      'pending': 'Pendiente',
-      'cancelled': 'Cancelado'
-    };
-    
-    return statusMap[status] || status;
-  };
-
-  // Formatear fecha
   const formatDate = (dateString: string) => {
-    try {
-      return format(new Date(dateString), 'dd MMM yyyy', { locale: es });
-    } catch (e) {
-      return dateString;
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat('es-ES', { 
+      day: '2-digit', 
+      month: '2-digit', 
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    }).format(date);
+  };
+
+  const getStatusBadge = (status: Order['status']) => {
+    switch(status) {
+      case 'pending':
+        return <Badge variant="outline">Pendiente</Badge>;
+      case 'processing':
+        return <Badge variant="secondary">Procesando</Badge>;
+      case 'shipped':
+        return <Badge variant="default">Enviado</Badge>;
+      case 'delivered':
+        return <Badge variant="default" className="bg-green-600">Entregado</Badge>;
+      case 'cancelled':
+        return <Badge variant="destructive">Cancelado</Badge>;
+      default:
+        return <Badge variant="outline">Desconocido</Badge>;
     }
   };
 
@@ -143,7 +130,7 @@ const Orders = () => {
       <Navbar categories={[]} />
       
       <main className="flex-grow container mx-auto px-4 py-8">
-        <div className="max-w-6xl mx-auto">
+        <div className="max-w-5xl mx-auto">
           <h1 className="text-3xl font-bold mb-8">Mis Órdenes</h1>
           
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -162,7 +149,7 @@ const Orders = () => {
                   </Button>
                   <Button 
                     variant="ghost" 
-                    className="w-full justify-start font-medium"
+                    className="w-full justify-start" 
                     onClick={() => navigate('/mis-ordenes')}
                   >
                     Mis Órdenes
@@ -181,43 +168,43 @@ const Orders = () => {
             <div className="md:col-span-3">
               <Card>
                 <CardHeader>
-                  <CardTitle>Historial de órdenes</CardTitle>
+                  <CardTitle>Historial de Pedidos</CardTitle>
                 </CardHeader>
                 <CardContent>
                   {isLoading ? (
-                    <div className="text-center py-8">
-                      <p>Cargando órdenes...</p>
+                    <div className="space-y-4">
+                      <Skeleton className="h-12 w-full" />
+                      <Skeleton className="h-12 w-full" />
+                      <Skeleton className="h-12 w-full" />
+                      <Skeleton className="h-12 w-full" />
                     </div>
                   ) : orders.length > 0 ? (
                     <Table>
                       <TableHeader>
                         <TableRow>
-                          <TableHead>Orden</TableHead>
+                          <TableHead>Número de Orden</TableHead>
                           <TableHead>Fecha</TableHead>
+                          <TableHead>Monto</TableHead>
                           <TableHead>Estado</TableHead>
-                          <TableHead>Total</TableHead>
-                          <TableHead className="text-right">Acciones</TableHead>
+                          <TableHead>Acciones</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
                         {orders.map((order) => (
                           <TableRow key={order.id}>
-                            <TableCell className="font-medium">{order.order_number}</TableCell>
+                            <TableCell>{order.order_number}</TableCell>
                             <TableCell>{formatDate(order.created_at)}</TableCell>
+                            <TableCell>S/ {order.total_amount.toFixed(2)}</TableCell>
+                            <TableCell>{getStatusBadge(order.status)}</TableCell>
                             <TableCell>
-                              <Badge variant={getStatusBadgeVariant(order.status)}>
-                                {translateStatus(order.status)}
-                              </Badge>
-                            </TableCell>
-                            <TableCell>S/ {order.total.toFixed(2)}</TableCell>
-                            <TableCell className="text-right">
                               <Button 
                                 variant="outline" 
                                 size="sm"
                                 onClick={() => {
+                                  // Future: navigate to order details
                                   toast({
-                                    title: "Vista de detalle",
-                                    description: `Viendo orden: ${order.order_number}`
+                                    title: "Próximamente",
+                                    description: "Detalles del pedido estará disponible pronto"
                                   });
                                 }}
                               >
@@ -230,14 +217,7 @@ const Orders = () => {
                     </Table>
                   ) : (
                     <div className="text-center py-8">
-                      <p className="text-muted-foreground">No tienes órdenes registradas</p>
-                      <Button 
-                        variant="outline" 
-                        className="mt-4"
-                        onClick={() => navigate('/productos')}
-                      >
-                        Explorar productos
-                      </Button>
+                      <p className="text-muted-foreground">No tienes órdenes recientes</p>
                     </div>
                   )}
                 </CardContent>

@@ -333,32 +333,38 @@ export type Database = {
       }
       profiles: {
         Row: {
+          address: string | null
           created_at: string
           email: string
           id: string
           is_active: boolean
           last_login: string | null
           name: string | null
+          phone: string | null
           role: Database["public"]["Enums"]["user_role"]
           updated_at: string
         }
         Insert: {
+          address?: string | null
           created_at?: string
           email: string
           id: string
           is_active?: boolean
           last_login?: string | null
           name?: string | null
+          phone?: string | null
           role?: Database["public"]["Enums"]["user_role"]
           updated_at?: string
         }
         Update: {
+          address?: string | null
           created_at?: string
           email?: string
           id?: string
           is_active?: boolean
           last_login?: string | null
           name?: string | null
+          phone?: string | null
           role?: Database["public"]["Enums"]["user_role"]
           updated_at?: string
         }
