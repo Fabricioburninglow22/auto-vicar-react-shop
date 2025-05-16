@@ -12,6 +12,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from "@/components/ui/skeleton";
+import { Loader2 } from 'lucide-react';
 
 interface Order {
   id: string;
@@ -52,42 +53,92 @@ const Orders = () => {
   const { toast } = useToast();
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [profileChecked, setProfileChecked] = useState(false);
 
   useEffect(() => {
-    // In the future, replace this with actual order data from Supabase
-    const fetchOrders = async () => {
+    // Verificar si el usuario tiene un perfil
+    const checkUserProfile = async () => {
+      if (!user) return;
+      
       try {
-        // Simulate network delay
-        setTimeout(() => {
-          setOrders(mockOrders);
-          setIsLoading(false);
-        }, 1000);
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('id')
+          .eq('id', user.id)
+          .maybeSingle();
         
-        // When we have a real orders table, use this:
-        // const { data, error } = await supabase
-        //   .from('orders')
-        //   .select('*')
-        //   .eq('user_id', user?.id)
-        //   .order('created_at', { ascending: false });
+        if (error) {
+          console.error('Error checking profile:', error.message);
+          return;
+        }
         
-        // if (error) throw error;
-        // setOrders(data || []);
+        // Si no hay perfil, intentamos crear uno
+        if (!data) {
+          await createUserProfile(user);
+        }
+        
+        setProfileChecked(true);
+        // Cargar las órdenes una vez que verificamos el perfil
+        fetchOrders();
       } catch (error: any) {
-        console.error('Error fetching orders:', error.message);
-        toast({
-          title: "Error",
-          description: "No se pudieron cargar tus órdenes",
-          variant: "destructive"
-        });
-      } finally {
+        console.error('Error:', error.message);
         setIsLoading(false);
       }
     };
-
-    if (user) {
-      fetchOrders();
-    }
+    
+    checkUserProfile();
   }, [user]);
+
+  // Crear un perfil de usuario si no existe
+  const createUserProfile = async (user: any) => {
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .insert({
+          id: user.id,
+          email: user.email,
+          name: user.user_metadata?.name || user.email?.split('@')[0] || '',
+        });
+
+      if (error) throw error;
+      
+    } catch (error: any) {
+      console.error('Error creating profile:', error.message);
+      toast({
+        title: "Error",
+        description: "No se pudo crear el perfil de usuario",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const fetchOrders = async () => {
+    try {
+      // Simulate network delay
+      setTimeout(() => {
+        setOrders(mockOrders);
+        setIsLoading(false);
+      }, 1000);
+      
+      // When we have a real orders table, use this:
+      // const { data, error } = await supabase
+      //   .from('orders')
+      //   .select('*')
+      //   .eq('user_id', user?.id)
+      //   .order('created_at', { ascending: false });
+      
+      // if (error) throw error;
+      // setOrders(data || []);
+    } catch (error: any) {
+      console.error('Error fetching orders:', error.message);
+      toast({
+        title: "Error",
+        description: "No se pudieron cargar tus órdenes",
+        variant: "destructive"
+      });
+      setIsLoading(false);
+    }
+  };
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -171,12 +222,10 @@ const Orders = () => {
                   <CardTitle>Historial de Pedidos</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  {isLoading ? (
-                    <div className="space-y-4">
-                      <Skeleton className="h-12 w-full" />
-                      <Skeleton className="h-12 w-full" />
-                      <Skeleton className="h-12 w-full" />
-                      <Skeleton className="h-12 w-full" />
+                  {!profileChecked || isLoading ? (
+                    <div className="flex flex-col items-center justify-center py-8 space-y-4">
+                      <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                      <p>Cargando órdenes...</p>
                     </div>
                   ) : orders.length > 0 ? (
                     <Table>
